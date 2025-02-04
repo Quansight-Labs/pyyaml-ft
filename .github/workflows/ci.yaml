@@ -3,8 +3,9 @@ name: PyYAML CI
 
 on:
   push:
+    branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
   workflow_dispatch:
     inputs:
       libyaml_repo:
