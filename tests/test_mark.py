@@ -1,7 +1,11 @@
+import pytest
 
 import yaml
+from .utils import filter_data_files
 
-def test_marks(marks_filename, verbose=False):
+
+@pytest.mark.parametrize("marks_filename", filter_data_files(".marks"))
+def test_marks(marks_filename):
     with open(marks_filename, 'r') as file:
         inputs = file.read().split('---\n')[1:]
     for input in inputs:
@@ -17,17 +21,8 @@ def test_marks(marks_filename, verbose=False):
             index += 1
         mark = yaml.Mark(marks_filename, index, line, column, input, index)
         snippet = mark.get_snippet(indent=2, max_length=79)
-        if verbose:
-            print(snippet)
         assert isinstance(snippet, str), type(snippet)
         assert snippet.count('\n') == 1, snippet.count('\n')
         data, pointer = snippet.split('\n')
         assert len(data) < 82, len(data)
         assert data[len(pointer)-1] == '*', data[len(pointer)-1]
-
-test_marks.unittest = ['.marks']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-

@@ -1,23 +1,14 @@
+import datetime
 
 import yaml
-import pprint
 
-import datetime
-import yaml.tokens
 
-# Import any packages here that need to be referenced in .code files.
-import signal
-
-def execute(code):
-    global value
-    exec(code)
-    return value
-
-def _make_objects():
+def make_constructor_helpers():
     global MyLoader, MyDumper, MyTestClass1, MyTestClass2, MyTestClass3, YAMLObject1, YAMLObject2,  \
             AnObject, AnInstance, AState, ACustomState, InitArgs, InitArgsWithState,    \
             NewArgs, NewArgsWithState, Reduce, ReduceWithState, Slots, MyInt, MyList, MyDict,  \
-            FixedOffset, today, execute, MyFullLoader
+            FixedOffset, today, MyFullLoader
+
 
     class MyLoader(yaml.Loader):
         pass
@@ -230,75 +221,3 @@ def _make_objects():
             return super().get_state_keys_blacklist() + ['^mymethod$', '^wrong_.*$']
 
     today = datetime.date.today()
-
-def _load_code(expression):
-    return eval(expression)
-
-def _serialize_value(data):
-    if isinstance(data, list):
-        return '[%s]' % ', '.join(map(_serialize_value, data))
-    elif isinstance(data, dict):
-        items = []
-        for key, value in data.items():
-            key = _serialize_value(key)
-            value = _serialize_value(value)
-            items.append("%s: %s" % (key, value))
-        items.sort()
-        return '{%s}' % ', '.join(items)
-    elif isinstance(data, datetime.datetime):
-        return repr(data.utctimetuple())
-    elif isinstance(data, float) and data != data:
-        return '?'
-    else:
-        return str(data)
-
-def test_constructor_types(data_filename, code_filename, verbose=False):
-    _make_objects()
-    native1 = None
-    native2 = None
-    try:
-        with open(data_filename, 'rb') as file:
-            native1 = list(yaml.load_all(file, Loader=MyLoader))
-        if len(native1) == 1:
-            native1 = native1[0]
-        with open(code_filename, 'rb') as file:
-            native2 = _load_code(file.read())
-        try:
-            if native1 == native2:
-                return
-        except TypeError:
-            pass
-        if verbose:
-            print("SERIALIZED NATIVE1:")
-            print(_serialize_value(native1))
-            print("SERIALIZED NATIVE2:")
-            print(_serialize_value(native2))
-        assert _serialize_value(native1) == _serialize_value(native2), (native1, native2)
-    finally:
-        if verbose:
-            print("NATIVE1:")
-            pprint.pprint(native1)
-            print("NATIVE2:")
-            pprint.pprint(native2)
-
-test_constructor_types.unittest = ['.data', '.code']
-
-def test_subclass_blacklist_types(data_filename, verbose=False):
-    _make_objects()
-    try:
-        with open(data_filename, 'rb') as file:
-            yaml.load(file.read(), MyFullLoader)
-    except yaml.YAMLError as exc:
-        if verbose:
-            print("%s:" % exc.__class__.__name__, exc)
-    else:
-        raise AssertionError("expected an exception")
-
-test_subclass_blacklist_types.unittest = ['.subclass_blacklist']
-
-if __name__ == '__main__':
-    import sys, test_constructor
-    sys.modules['test_constructor'] = sys.modules['__main__']
-    import test_appliance
-    test_appliance.run(globals())
-

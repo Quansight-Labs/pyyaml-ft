@@ -1,8 +1,17 @@
+import codecs
+import io
+import tempfile
+import os
+import os.path
+
+import pytest
 
 import yaml
-import codecs, io, tempfile, os, os.path
+from .utils import filter_data_files
 
-def test_unicode_input(unicode_filename, verbose=False):
+
+@pytest.mark.parametrize("unicode_filename", filter_data_files(".unicode"))
+def test_unicode_input(unicode_filename):
     with open(unicode_filename, 'rb') as file:
         data = file.read().decode('utf-8')
     value = ' '.join(data.split())
@@ -14,16 +23,14 @@ def test_unicode_input(unicode_filename, verbose=False):
                     codecs.BOM_UTF8+data.encode('utf-8'),
                     codecs.BOM_UTF16_BE+data.encode('utf-16-be'),
                     codecs.BOM_UTF16_LE+data.encode('utf-16-le')]:
-        if verbose:
-            print("INPUT:", repr(input[:10]), "...")
         output = yaml.full_load(input)
         assert output == value, (output, value)
         output = yaml.full_load(io.BytesIO(input))
         assert output == value, (output, value)
 
-test_unicode_input.unittest = ['.unicode']
 
-def test_unicode_input_errors(unicode_filename, verbose=False):
+@pytest.mark.parametrize("unicode_filename", filter_data_files(".unicode"))
+def test_unicode_input_errors(unicode_filename):
     with open(unicode_filename, 'rb') as file:
         data = file.read().decode('utf-8')
     for input in [data.encode('utf-16-be'),
@@ -31,24 +38,15 @@ def test_unicode_input_errors(unicode_filename, verbose=False):
             codecs.BOM_UTF8+data.encode('utf-16-be'),
             codecs.BOM_UTF8+data.encode('utf-16-le')]:
 
-        try:
+        with pytest.raises(yaml.YAMLError):
             yaml.full_load(input)
-        except yaml.YAMLError as exc:
-            if verbose:
-                print(exc)
-        else:
-            raise AssertionError("expected an exception")
-        try:
+
+        with pytest.raises(yaml.YAMLError):
             yaml.full_load(io.BytesIO(input))
-        except yaml.YAMLError as exc:
-            if verbose:
-                print(exc)
-        else:
-            raise AssertionError("expected an exception")
 
-test_unicode_input_errors.unittest = ['.unicode']
 
-def test_unicode_output(unicode_filename, verbose=False):
+@pytest.mark.parametrize("unicode_filename", filter_data_files(".unicode"))
+def test_unicode_output(unicode_filename):
     with open(unicode_filename, 'rb') as file:
         data = file.read().decode('utf-8')
     value = ' '.join(data.split())
@@ -64,27 +62,20 @@ def test_unicode_output(unicode_filename, verbose=False):
                 data3 = data3.decode(encoding)
             stream = io.BytesIO()
             if encoding is None:
-                try:
+                with pytest.raises(TypeError):
                     yaml.dump(value, stream, encoding=encoding, allow_unicode=allow_unicode)
-                except TypeError as exc:
-                    if verbose:
-                        print(exc)
-                    data4 = None
-                else:
-                    raise AssertionError("expected an exception")
+                data4 = None
             else:
                 yaml.dump(value, stream, encoding=encoding, allow_unicode=allow_unicode)
                 data4 = stream.getvalue()
-                if verbose:
-                    print("BYTES:", data4[:50])
                 data4 = data4.decode(encoding)
 
             assert isinstance(data1, str), (type(data1), encoding)
             assert isinstance(data2, str), (type(data2), encoding)
 
-test_unicode_output.unittest = ['.unicode']
 
-def test_file_output(unicode_filename, verbose=False):
+@pytest.mark.parametrize("unicode_filename", filter_data_files(".unicode"))
+def test_file_output(unicode_filename):
     with open(unicode_filename, 'rb') as file:
         data = file.read().decode('utf-8')
     handle, filename = tempfile.mkstemp()
@@ -111,9 +102,9 @@ def test_file_output(unicode_filename, verbose=False):
         if os.path.exists(filename):
             os.unlink(filename)
 
-test_file_output.unittest = ['.unicode']
 
-def test_unicode_transfer(unicode_filename, verbose=False):
+@pytest.mark.parametrize("unicode_filename", filter_data_files(".unicode"))
+def test_unicode_transfer(unicode_filename):
     with open(unicode_filename, 'rb') as file:
         data = file.read().decode('utf-8')
     for encoding in [None, 'utf-8', 'utf-16-be', 'utf-16-le']:
@@ -133,9 +124,3 @@ def test_unicode_transfer(unicode_filename, verbose=False):
         else:
             assert isinstance(output2, bytes), (type(output1), encoding)
             output2.decode(encoding)
-
-test_unicode_transfer.unittest = ['.unicode']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())

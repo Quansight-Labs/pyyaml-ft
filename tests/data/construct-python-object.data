@@ -1,0 +1,23 @@
+- !!python/object:tests.constructor_helpers.AnObject { foo: 1, bar: two, baz: [3,3,3] }
+- !!python/object:tests.constructor_helpers.AnInstance { foo: 1, bar: two, baz: [3,3,3] }
+
+- !!python/object/new:tests.constructor_helpers.AnObject { args: [1, two], kwds: {baz: [3,3,3]} }
+- !!python/object/apply:tests.constructor_helpers.AnInstance { args: [1, two], kwds: {baz: [3,3,3]} }
+
+- !!python/object:tests.constructor_helpers.AState { _foo: 1, _bar: two, _baz: [3,3,3] }
+- !!python/object/new:tests.constructor_helpers.ACustomState { state: !!python/tuple [1, two, [3,3,3]] }
+
+- !!python/object/new:tests.constructor_helpers.InitArgs [1, two, [3,3,3]]
+- !!python/object/new:tests.constructor_helpers.InitArgsWithState { args: [1, two], state: [3,3,3] }
+
+- !!python/object/new:tests.constructor_helpers.NewArgs [1, two, [3,3,3]]
+- !!python/object/new:tests.constructor_helpers.NewArgsWithState { args: [1, two], state: [3,3,3] }
+
+- !!python/object/apply:tests.constructor_helpers.Reduce [1, two, [3,3,3]]
+- !!python/object/apply:tests.constructor_helpers.ReduceWithState { args: [1, two], state: [3,3,3] }
+
+- !!python/object/new:tests.constructor_helpers.Slots { state: !!python/tuple [null, { foo: 1, bar: 'two', baz: [3,3,3] } ] }
+
+- !!python/object/new:tests.constructor_helpers.MyInt [3]
+- !!python/object/new:tests.constructor_helpers.MyList { listitems: [~, ~, ~] }
+- !!python/object/new:tests.constructor_helpers.MyDict { dictitems: {0, 1, 2} }

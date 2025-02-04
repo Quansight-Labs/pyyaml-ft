@@ -1,7 +1,11 @@
-import yaml
 import sys
-import pprint
 import math
+
+import pytest
+
+import yaml
+from .utils import filter_data_files
+
 
 def check_bool(value, expected):
     if expected == 'false()' and value is False:
@@ -50,7 +54,8 @@ def _fail(input, test):
 
 # The tests/data/yaml11.schema file is copied from
 # https://github.com/perlpunk/yaml-test-schema/blob/master/data/schema-yaml11.yaml
-def test_implicit_resolver(data_filename, skip_filename, verbose=False):
+@pytest.mark.parametrize("data_filename,skip_filename", filter_data_files(".schema", ".schema-skip"))
+def test_implicit_resolver(data_filename, skip_filename):
     types = {
         'str':   [str,   check_str],
         'int':   [int,   check_int],
@@ -59,21 +64,17 @@ def test_implicit_resolver(data_filename, skip_filename, verbose=False):
         'nan':   [float, check_float],
         'bool':  [bool,  check_bool],
     }
+
     with open(skip_filename, 'rb') as file:
         skipdata = yaml.load(file, Loader=yaml.SafeLoader)
     skip_load = skipdata['load']
     skip_dump = skipdata['dump']
-    if verbose:
-        print(skip_load)
     with open(data_filename, 'rb') as file:
         tests = yaml.load(file, Loader=yaml.SafeLoader)
 
     i = 0
     fail = 0
     for i, (input, test) in enumerate(sorted(tests.items())):
-        if verbose:
-            print('-------------------- ' + str(i))
-
         # Skip known loader bugs
         if input in skip_load:
             continue
@@ -90,12 +91,6 @@ def test_implicit_resolver(data_filename, skip_filename, verbose=False):
             fail+=1
             _fail(input, test)
             continue
-
-        if verbose:
-            print(input)
-            print(test)
-            print(loaded)
-            print(type(loaded))
 
         if exp_type == 'null':
             if loaded is None:
@@ -143,10 +138,3 @@ def test_implicit_resolver(data_filename, skip_filename, verbose=False):
         print("Passed " + str(i) + " tests")
     print("Skipped " + str(len(skip_load)) + " load tests")
     print("Skipped " + str(len(skip_dump)) + " dump tests")
-
-test_implicit_resolver.unittest = ['.schema', '.schema-skip']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-

@@ -1,5 +1,7 @@
+import pytest
 
 import yaml
+from .utils import filter_data_files
 
 class AnInstance:
 
@@ -22,31 +24,14 @@ class AnInstanceWithState(AnInstance):
     def __setstate__(self, state):
         self.foo, self.bar = state['attributes']
 
-def test_recursive(recursive_filename, verbose=False):
+
+@pytest.mark.parametrize("recursive_filename", filter_data_files(".recursive"))
+def test_recursive(recursive_filename):
     context = globals().copy()
     with open(recursive_filename, 'rb') as file:
         exec(file.read(), context)
     value1 = context['value']
-    output1 = None
-    value2 = None
-    output2 = None
-    try:
-        output1 = yaml.dump(value1)
-        value2 = yaml.unsafe_load(output1)
-        output2 = yaml.dump(value2)
-        assert output1 == output2, (output1, output2)
-    finally:
-        if verbose:
-            print("VALUE1:", value1)
-            print("VALUE2:", value2)
-            print("OUTPUT1:")
-            print(output1)
-            print("OUTPUT2:")
-            print(output2)
-
-test_recursive.unittest = ['.recursive']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-
+    output1 = yaml.dump(value1)
+    value2 = yaml.unsafe_load(output1)
+    output2 = yaml.dump(value2)
+    assert output1 == output2, (output1, output2)

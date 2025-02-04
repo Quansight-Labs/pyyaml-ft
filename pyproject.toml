@@ -7,3 +7,6 @@ requires = [
 ]
 backend-path = ["packaging"]
 build-backend = "_pyyaml_pep517"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

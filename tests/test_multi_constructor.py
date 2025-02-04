@@ -1,9 +1,8 @@
-import yaml
-import pprint
-import sys
+import pytest
 
-def _load_code(expression):
-    return eval(expression)
+import yaml
+from .utils import filter_data_files, load_code
+
 
 def myconstructor1(constructor, tag, node):
     seq = constructor.construct_sequence(node)
@@ -28,38 +27,22 @@ class Multi1(yaml.FullLoader):
 class Multi2(yaml.FullLoader):
     pass
 
-def test_multi_constructor(input_filename, code_filename, verbose=False):
+
+@pytest.mark.parametrize("input_filename,code_filename", filter_data_files(".multi", ".code"))
+def test_multi_constructor(input_filename, code_filename):
     with open(input_filename, 'rb') as file:
         input = file.read().decode('utf-8')
     with open(code_filename, 'rb') as file:
-        native = _load_code(file.read())
+        native = load_code(file.read(), globals(), locals())
 
     # default multi constructor for ! and !! tags
     Multi1.add_multi_constructor('!', myconstructor1)
     Multi1.add_multi_constructor('tag:yaml.org,2002:', myconstructor1)
 
     data = yaml.load(input, Loader=Multi1)
-    if verbose:
-        print('Multi1:')
-        print(data)
-        print(native)
     assert(data == native)
-
 
     # default multi constructor for all tags
     Multi2.add_multi_constructor(None, myconstructor2)
-
     data = yaml.load(input, Loader=Multi2)
-    if verbose:
-        print('Multi2:')
-        print(data)
-        print(native)
     assert(data == native)
-
-
-test_multi_constructor.unittest = ['.multi', '.code']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-

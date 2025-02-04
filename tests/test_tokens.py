@@ -1,6 +1,7 @@
+import pytest
 
 import yaml
-import pprint
+from .utils import filter_data_files
 
 # Tokens mnemonic:
 # directive:            %
@@ -42,39 +43,25 @@ _replaces = {
     yaml.ValueToken: ':',
 }
 
-def test_tokens(data_filename, tokens_filename, verbose=False):
+
+@pytest.mark.parametrize("data_filename,tokens_filename", filter_data_files(".data", ".tokens"))
+def test_tokens(data_filename, tokens_filename):
     tokens1 = []
     with open(tokens_filename, 'r') as file:
         tokens2 = file.read().split()
-    try:
-        with open(data_filename, 'rb') as file:
-            for token in yaml.scan(file):
-                if not isinstance(token, (yaml.StreamStartToken, yaml.StreamEndToken)):
-                    tokens1.append(_replaces[token.__class__])
-    finally:
-        if verbose:
-            print("TOKENS1:", ' '.join(tokens1))
-            print("TOKENS2:", ' '.join(tokens2))
+    with open(data_filename, 'rb') as file:
+        for token in yaml.scan(file):
+            if not isinstance(token, (yaml.StreamStartToken, yaml.StreamEndToken)):
+                tokens1.append(_replaces[token.__class__])
     assert len(tokens1) == len(tokens2), (tokens1, tokens2)
     for token1, token2 in zip(tokens1, tokens2):
         assert token1 == token2, (token1, token2)
 
-test_tokens.unittest = ['.data', '.tokens']
 
-def test_scanner(data_filename, canonical_filename, verbose=False):
+@pytest.mark.parametrize("data_filename,canonical_filename", filter_data_files(".data", ".canonical"))
+def test_scanner(data_filename, canonical_filename):
     for filename in [data_filename, canonical_filename]:
         tokens = []
-        try:
-            with open(filename, 'rb') as file:
-                for token in yaml.scan(file):
-                    tokens.append(token.__class__.__name__)
-        finally:
-            if verbose:
-                pprint.pprint(tokens)
-
-test_scanner.unittest = ['.data', '.canonical']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-
+        with open(filename, 'rb') as file:
+            for token in yaml.scan(file):
+                tokens.append(token.__class__.__name__)

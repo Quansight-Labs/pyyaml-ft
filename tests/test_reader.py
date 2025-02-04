@@ -1,22 +1,21 @@
+import pytest
 
 import yaml.reader
+from .utils import filter_data_files
 
-def _run_reader(data, verbose):
-    try:
+def _run_reader(data):
+    with pytest.raises(yaml.reader.ReaderError):
         stream = yaml.reader.Reader(data)
         while stream.peek() != '\0':
             stream.forward()
-    except yaml.reader.ReaderError as exc:
-        if verbose:
-            print(exc)
-    else:
-        raise AssertionError("expected an exception")
 
-def test_stream_error(error_filename, verbose=False):
+
+@pytest.mark.parametrize("error_filename", filter_data_files(".stream-error"))
+def test_stream_error(error_filename):
     with open(error_filename, 'rb') as file:
-        _run_reader(file, verbose)
+        _run_reader(file)
     with open(error_filename, 'rb') as file:
-        _run_reader(file.read(), verbose)
+        _run_reader(file.read())
     for encoding in ['utf-8', 'utf-16-le', 'utf-16-be']:
         try:
             with open(error_filename, 'rb') as file:
@@ -26,13 +25,6 @@ def test_stream_error(error_filename, verbose=False):
             pass
     else:
         return
-    _run_reader(data, verbose)
+    _run_reader(data)
     with open(error_filename, encoding=encoding) as file:
-        _run_reader(file, verbose)
-
-test_stream_error.unittest = ['.stream-error']
-
-if __name__ == '__main__':
-    import test_appliance
-    test_appliance.run(globals())
-
+        _run_reader(file)
