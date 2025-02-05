@@ -110,15 +110,12 @@ def setup_cext(node, constructor_helpers, structure_helpers, resolver_helpers):
     except AttributeError:
         pass
     else:
-        file = None
-        for v in callspec.params.values():
-            if isinstance(v, pathlib.Path):
-                file = v
+        for param in callspec.params.values():
+            if isinstance(param, pathlib.Path):
+                data_files = utils.all_data_files()
+                if ".skip-ext" in data_files[param.stem]:
+                    pytest.skip("Skipping .skip-ext when running cext")
                 break
-        if file is not None:
-            data_files = utils.all_data_files()
-            if ".skip-ext" in data_files[file.stem]:
-                pytest.skip("Skipping .skip-ext when running cext")
 
     yaml.BaseLoader = yaml.CBaseLoader
     yaml.SafeLoader = yaml.CSafeLoader
