@@ -1,6 +1,6 @@
 import pytest
 
-from . import setup_modules
+from .legacy_tests import setup_modules
 
 
 def pytest_configure(config):
