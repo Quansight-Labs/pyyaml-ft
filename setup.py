@@ -1,7 +1,7 @@
 
-NAME = 'PyYAML'
-VERSION = '7.0.0.dev0'
-DESCRIPTION = "YAML parser and emitter for Python"
+NAME = 'PyYAML-ft'
+VERSION = '0.1.0.dev0'
+DESCRIPTION = "YAML parser and emitter for Python with support for free-threading"
 LONG_DESCRIPTION = """\
 YAML is a data serialization format designed for human readability
 and interaction with scripting languages.  PyYAML is a YAML parser
@@ -13,13 +13,15 @@ supports standard YAML tags and provides Python-specific tags that
 allow to represent an arbitrary Python object.
 
 PyYAML is applicable for a broad range of tasks from complex
-configuration files to object serialization and persistence."""
+configuration files to object serialization and persistence.
+
+PyYAML-ft is a fork of PyYAML that adds support for free-threading."""
 AUTHOR = "Kirill Simonov"
 AUTHOR_EMAIL = 'xi@resolvent.net'
 LICENSE = "MIT"
 PLATFORMS = "Any"
 URL = "https://pyyaml.org/"
-DOWNLOAD_URL = "https://pypi.org/project/PyYAML/"
+DOWNLOAD_URL = "https://pypi.org/project/PyYAML-ft/"
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -40,11 +42,11 @@ CLASSIFIERS = [
     "Topic :: Text Processing :: Markup",
 ]
 PROJECT_URLS = {
-   'Bug Tracker': 'https://github.com/yaml/pyyaml/issues',
-   'CI': 'https://github.com/yaml/pyyaml/actions',
+   'Bug Tracker': 'https://github.com/Quansight-Labs/pyyaml/issues',
+   'CI': 'https://github.com/Quansight-Labs/pyyaml/actions',
    'Documentation': 'https://pyyaml.org/wiki/PyYAMLDocumentation',
    'Mailing lists': 'http://lists.sourceforge.net/lists/listinfo/yaml-core',
-   'Source Code': 'https://github.com/yaml/pyyaml',
+   'Source Code': 'https://github.com/Quansight-Labs/pyyaml',
 }
 
 LIBYAML_CHECK = """

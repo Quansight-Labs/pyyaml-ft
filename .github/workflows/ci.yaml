@@ -231,7 +231,7 @@ jobs:
 
         mkdir pyyaml
 
-        tar zxf ${{ steps.fetch_sdist.outputs.download-path }}/pyyaml*.tar.gz/pyyaml*.tar.gz --strip-components=1 -C pyyaml
+        tar zxf ${{ steps.fetch_sdist.outputs.download-path }}/pyyaml_ft*.tar.gz/pyyaml_ft*.tar.gz --strip-components=1 -C pyyaml
 
         cat << 'EOF' > build_config.toml
         [tool.cibuildwheel.config-settings]
@@ -397,7 +397,7 @@ jobs:
         python3 -m pip install -U --user ${{ matrix.cibw_version || 'cibuildwheel' }}
         mkdir pyyaml
         
-        tar zxf pyyaml*.tar.gz/pyyaml*.tar.gz --strip-components=1 -C pyyaml
+        tar zxf pyyaml_ft*.tar.gz/pyyaml_ft*.tar.gz --strip-components=1 -C pyyaml
         
         cat << 'EOF' > build_config.toml
         [tool.cibuildwheel.config-settings]
@@ -553,7 +553,7 @@ jobs:
         python -m pip install -U --user ${{ matrix.cibw_version || 'cibuildwheel' }}
         mkdir pyyaml
 
-        tar zxf pyyaml*.tar.gz/pyyaml*.tar.gz --strip-components=1 -C pyyaml
+        tar zxf pyyaml_ft*.tar.gz/pyyaml_ft*.tar.gz --strip-components=1 -C pyyaml
 
         cat << 'EOF' > build_config.toml
         [tool.cibuildwheel.config-settings]
