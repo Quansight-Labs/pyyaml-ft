@@ -24,7 +24,7 @@ collect_ignore_glob = ['data/*']
 
 class PyYAMLItem(pytest.Item):
     def __init__(self, parent=None, config=None, session=None, nodeid=None, function=None, filenames=None, **kwargs):
-        self._function = function
+        self.obj = function
         self._fargs = filenames or []
 
         super().__init__(os.path.basename(filenames[0]) if filenames else parent.name, parent, config, session, nodeid)
@@ -37,7 +37,7 @@ class PyYAMLItem(pytest.Item):
             self.lineno = function.__code__.co_firstlineno
 
     def runtest(self):
-        self._function(verbose=True, *self._fargs)
+        self.obj(verbose=True, *self._fargs)
 
     def reportinfo(self):
         return self.fspath, self.lineno, ''
@@ -45,7 +45,7 @@ class PyYAMLItem(pytest.Item):
 
 class PyYAMLCollector(pytest.Collector):
     def __init__(self, name, parent=None, function=None, **kwargs):
-        self._function = function
+        self.obj = function
         self.fspath = parent.fspath.__class__(function.__code__.co_filename)
         self.lineno = function.__code__.co_firstlineno
 
@@ -58,10 +58,10 @@ class PyYAMLCollector(pytest.Collector):
     def collect(self):
         items = []
 
-        unittest = getattr(self._function, 'unittest', None)
+        unittest = getattr(self.obj, 'unittest', None)
 
         if unittest is True:  # no filenames
-            items.append(PyYAMLItem.from_parent(parent=self, function=self._function, filenames=None))
+            items.append(PyYAMLItem.from_parent(parent=self, function=self.obj, filenames=None))
         else:
             for base, exts in _test_filenames:
                 filenames = []
@@ -70,12 +70,12 @@ class PyYAMLCollector(pytest.Collector):
                         break
                     filenames.append(os.path.join(DATA, base + ext))
                 else:
-                    skip_exts = getattr(self._function, 'skip', [])
+                    skip_exts = getattr(self.obj, 'skip', [])
                     for skip_ext in skip_exts:
                         if skip_ext in exts:
                             break
                     else:
-                        items.append(PyYAMLItem.from_parent(parent=self, function=self._function, filenames=filenames))
+                        items.append(PyYAMLItem.from_parent(parent=self, function=self.obj, filenames=filenames))
 
         return items or None
 
