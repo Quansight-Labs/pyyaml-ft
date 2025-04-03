@@ -4,6 +4,7 @@ __all__ = ['BaseRepresenter', 'SafeRepresenter', 'Representer',
 
 from .error import *
 from .nodes import *
+from .registry import RegistryMeta, RepresenterRegistry
 
 import threading
 import datetime, copyreg, types, base64, collections
@@ -22,28 +23,10 @@ class RepresenterSetup(threading.local):
             setup_representers()
 
 
-class RepresenterRegistry(threading.local):
-    def __init__(self):
-        self.yaml_representers = {}
-        self.yaml_multi_representers = {}
-        self.yaml_representers_initialized = False
-        self.yaml_multi_representers_initialized = False
-
-
-class RepresenterMeta(type):
-    """Metaclass to handle representer registry inheritance"""
-    
-    def __new__(mcs, name, bases, attrs):
-        cls = super().__new__(mcs, name, bases, attrs)
-        if 'representer_registry' not in cls.__dict__:
-            cls.representer_registry = RepresenterRegistry()
-        return cls
-
-
-class BaseRepresenter(metaclass=RepresenterMeta):
+class BaseRepresenter(metaclass=RegistryMeta):
 
     representer_setup = RepresenterSetup()
-    representer_registry = RepresenterRegistry()
+    representer_registry = RepresenterRegistry(yaml_representers_initialized=True, yaml_multi_representers_initialized=True)
 
     def __init__(self, default_style=None, default_flow_style=False, sort_keys=True):
         self.default_style = default_style
@@ -98,28 +81,20 @@ class BaseRepresenter(metaclass=RepresenterMeta):
     def yaml_representers(cls):
         cls.representer_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.get_registry, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro
-        if cls.representer_registry.yaml_representers_initialized or cls is BaseRepresenter:
+        if cls.representer_registry.yaml_representers_initialized:
             return cls.representer_registry.yaml_representers
 
-        # Otherwise, we need to find to return the registry of the parent class
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_representers') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_representers') and c is not cls)
         return constructor_cls.yaml_representers()
 
     @classmethod
     def yaml_multi_representers(cls):
         cls.representer_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.get_registry, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro
-        if cls.representer_registry.yaml_multi_representers_initialized or cls is BaseRepresenter:
+        if cls.representer_registry.yaml_multi_representers_initialized:
             return cls.representer_registry.yaml_multi_representers
 
-        # Otherwise, we need to find to return the registry of the parent class
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_multi_representers') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_multi_representers') and c is not cls)
         return constructor_cls.yaml_multi_representers()
 
     @classmethod

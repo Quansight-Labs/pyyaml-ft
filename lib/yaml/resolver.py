@@ -3,6 +3,7 @@ __all__ = ['BaseResolver', 'Resolver']
 
 from .error import *
 from .nodes import *
+from .registry import RegistryMeta, ResolverRegistry
 
 import re
 import threading
@@ -22,31 +23,21 @@ class ResolverSetup(threading.local):
 
 
 class ResolverRegistry(threading.local):
-    def __init__(self):
+    def __init__(self, yaml_implicit_resolvers_initialized=False, yaml_path_resolvers_initialized=False):
         self.yaml_implicit_resolvers = {}
         self.yaml_path_resolvers = {}
-        self.yaml_implicit_resolvers_initialized = False
-        self.yaml_path_resolvers_initialized = False
+        self.yaml_implicit_resolvers_initialized = yaml_implicit_resolvers_initialized
+        self.yaml_path_resolvers_initialized = yaml_path_resolvers_initialized
 
 
-class ResolverMeta(type):
-    """Metaclass to handle constructor registry inheritance"""
-    
-    def __new__(mcs, name, bases, attrs):
-        cls = super().__new__(mcs, name, bases, attrs)
-        if 'resolver_registry' not in cls.__dict__:
-            cls.resolver_registry = ResolverRegistry()
-        return cls
-
-
-class BaseResolver(metaclass=ResolverMeta):
+class BaseResolver(metaclass=RegistryMeta):
 
     DEFAULT_SCALAR_TAG = 'tag:yaml.org,2002:str'
     DEFAULT_SEQUENCE_TAG = 'tag:yaml.org,2002:seq'
     DEFAULT_MAPPING_TAG = 'tag:yaml.org,2002:map'
 
     resolver_setup = ResolverSetup()
-    resolver_registry = ResolverRegistry()
+    resolver_registry = ResolverRegistry(yaml_implicit_resolvers_initialized=True, yaml_path_resolvers_initialized=True)
 
     def __init__(self):
         self.resolver_exact_paths = []
@@ -56,28 +47,20 @@ class BaseResolver(metaclass=ResolverMeta):
     def yaml_implicit_resolvers(cls):
         cls.resolver_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.get_registry, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro
-        if cls.resolver_registry.yaml_implicit_resolvers_initialized or cls is BaseResolver:
+        if cls.resolver_registry.yaml_implicit_resolvers_initialized:
             return cls.resolver_registry.yaml_implicit_resolvers
 
-        # Otherwise, we need to find to return the registry of the parent class
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_implicit_resolvers') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_implicit_resolvers') and c is not cls)
         return constructor_cls.yaml_implicit_resolvers()
 
     @classmethod
     def yaml_path_resolvers(cls):
         cls.resolver_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.get_registry, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro
-        if cls.resolver_registry.yaml_path_resolvers_initialized or cls is BaseResolver:
+        if cls.resolver_registry.yaml_path_resolvers_initialized:
             return cls.resolver_registry.yaml_path_resolvers
 
-        # Otherwise, we need to find to return the registry of the parent class
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_path_resolvers') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_path_resolvers') and c is not cls)
         return constructor_cls.yaml_path_resolvers()
 
     @classmethod

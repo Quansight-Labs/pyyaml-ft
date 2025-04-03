@@ -10,6 +10,7 @@ __all__ = [
 
 from .error import *
 from .nodes import *
+from .registry import RegistryMeta, ConstructorRegistry
 
 import threading
 import collections.abc, datetime, base64, binascii, re, sys, types
@@ -28,28 +29,10 @@ class ConstructorSetup(threading.local):
             setup_constructors()
 
 
-class ConstructorRegistry(threading.local):
-    def __init__(self):
-        self.yaml_constructors = {}
-        self.yaml_constructors_initialized = False
-        self.yaml_multi_constructors = {}
-        self.yaml_multi_constructors_initialized = False
-
-
-class ConstructorMeta(type):
-    """Metaclass to handle constructor registry inheritance"""
-    
-    def __new__(mcs, name, bases, attrs):
-        cls = super().__new__(mcs, name, bases, attrs)
-        if 'constructor_registry' not in cls.__dict__:
-            cls.constructor_registry = ConstructorRegistry()
-        return cls
-
-
-class BaseConstructor(metaclass=ConstructorMeta):
+class BaseConstructor(metaclass=RegistryMeta):
 
     constructor_setup = ConstructorSetup() 
-    constructor_registry = ConstructorRegistry()
+    constructor_registry = ConstructorRegistry(yaml_constructors_initialized=True, yaml_multi_constructors_initialized=True)
 
     def __init__(self):
         self.constructed_objects = {}
@@ -192,26 +175,20 @@ class BaseConstructor(metaclass=ConstructorMeta):
     def yaml_constructors(cls):
         cls.constructor_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.yaml_constructors, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro anymore
-        if cls.constructor_registry.yaml_constructors_initialized or cls is BaseConstructor:
+        if cls.constructor_registry.yaml_constructors_initialized:
             return cls.constructor_registry.yaml_constructors
 
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_constructors') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_constructors') and c is not cls)
         return constructor_cls.yaml_constructors()
 
     @classmethod
     def yaml_multi_constructors(cls):
         cls.constructor_setup.ensure_initialized()
 
-        # In case we're calling BaseConstructor.yaml_multi_constructors, we should return the registry
-        # of the BaseConstructor class directly, since we don't need to go up the mro anymore
-        if cls.constructor_registry.yaml_multi_constructors_initialized or cls is BaseConstructor:
+        if cls.constructor_registry.yaml_multi_constructors_initialized:
             return cls.constructor_registry.yaml_multi_constructors
 
-        constructor_cls = next(
-            c for c in cls.mro() if hasattr(c, 'yaml_multi_constructors') and c is not cls)
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_multi_constructors') and c is not cls)
         return constructor_cls.yaml_multi_constructors()
 
     @classmethod
