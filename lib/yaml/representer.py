@@ -24,6 +24,12 @@ class RepresenterSetup(threading.local):
 
 
 class BaseRepresenter(metaclass=RegistryMeta):
+    """
+    Base class for representers.
+
+    More information on `setup` and `registry` below can be found in the `BaseConstructor`
+    docstring.
+    """
 
     representer_setup = RepresenterSetup()
     representer_registry = RepresenterRegistry(yaml_representers_initialized=True, yaml_multi_representers_initialized=True)

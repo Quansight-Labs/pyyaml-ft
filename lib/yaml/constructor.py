@@ -30,6 +30,62 @@ class ConstructorSetup(threading.local):
 
 
 class BaseConstructor(metaclass=RegistryMeta):
+    """
+    Base class for all constructors.
+
+    Some information on the `setup` and `registry` class attributes:
+    - Each class in the class hierarchy should have its own registry.
+      If it's not initialized, it should inherit the parent's registry.
+      As soon as it gets initialized, it should copy over all of the
+      parent's registry items and start growing independently.
+    - `setup` is initialized in the base class and is not
+      overwritten in subclasses. Its aim is to initialize the registry
+      with the default constructors *once* per thread for all the classes
+      in the hierarchy.
+    - `registry` is initialized in the base class and is
+      overwritten in subclasses (done in `RegistryMeta`). Its aim is
+      to have a thread-local registry for constructors. `yaml_constructors`
+      is a property that checks if the registry is initialized for the
+      current thread and returns it if it is. If it's not, it walks up the
+      MRO until it finds a class that has an initialized registry (remember
+      that the base class always starts out initialized so the recursion
+      will certainly stop there).
+
+    The following diagram shows the inheritance structure of the constructor
+    and resolver classes (the same exact thing applies to representers and
+    reolvers).
+
+    ┌────────────────────────────────┐    ┌────────────────────────────┐
+    │       Base Constructor         │    │       Base Resolver        │
+    │                                │    │                            │
+    │ constructor_setup:             │    │ resolver_setup:            │
+    │  Starts uninitialized. Does    │    │  Same properties with      │
+    │  not get overwritten by        │    │  constructor_setup.        │
+    │  subclasses.                   │    │                            │
+    │                                │    │                            │
+    │ constructor_registry:          │    │ resolver_registry:         │
+    │  Starts initialized for Base   │    │  Same properties with      │
+    │  and uninitialized for all     │    │  constructor_registry.     │
+    │  subclasses. Gets overwritten  │    │                            │
+    │  in subclasses.                │    │                            │
+    │                                │    │                            │
+    └───────────────┬────────────────┘    └─────────────┬──────────────┘
+                    │                                   │               
+                    ▼                                   │               
+    ┌────────────────────────────────┐                  │               
+    │       Safe Constructor         │                  │               
+    └───────────────┬────────────────┘                  │               
+                    │                                   │               
+                    ▼                                   ▼               
+    ┌────────────────────────────────┐    ┌────────────────────────────┐
+    │       Constructor              │    │       Resolver             │
+    └───────────────┬────────────────┘    └─────────────┬──────────────┘
+                    │                                   │               
+                    │                                   │               
+                    │       ┌───────────────────┐       │               
+                    └──────►│    Loader         │◄──────┘               
+                            └───────────────────┘                       
+    """
 
     constructor_setup = ConstructorSetup() 
     constructor_registry = ConstructorRegistry(yaml_constructors_initialized=True, yaml_multi_constructors_initialized=True)

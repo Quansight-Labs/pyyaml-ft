@@ -22,15 +22,13 @@ class ResolverSetup(threading.local):
             setup_resolvers()
 
 
-class ResolverRegistry(threading.local):
-    def __init__(self, yaml_implicit_resolvers_initialized=False, yaml_path_resolvers_initialized=False):
-        self.yaml_implicit_resolvers = {}
-        self.yaml_path_resolvers = {}
-        self.yaml_implicit_resolvers_initialized = yaml_implicit_resolvers_initialized
-        self.yaml_path_resolvers_initialized = yaml_path_resolvers_initialized
-
-
 class BaseResolver(metaclass=RegistryMeta):
+    """
+    Base class for resolvers.
+
+    More information on `setup` and `registry` below can be found in the `BaseConstructor`
+    docstring.
+    """
 
     DEFAULT_SCALAR_TAG = 'tag:yaml.org,2002:str'
     DEFAULT_SEQUENCE_TAG = 'tag:yaml.org,2002:seq'
