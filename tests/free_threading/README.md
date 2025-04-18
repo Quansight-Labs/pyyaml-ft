@@ -10,3 +10,7 @@ from multiple threads.
 
 `test_stress` aims to add an integration stress test that tests parsing/dumping
 yaml strings and adds some randomness to the process.
+
+`test_real_world` presents a use-case closer to how PyYAML will be used
+in the real world. It creates a directory with a lot of different YAML files
+that resemble those of Github Actions and tries to parse them all in a thread pool.
