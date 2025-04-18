@@ -32,4 +32,5 @@ def test_constructor_registration():
 
     objs = yaml.load(yamlcode, Loader=MyLoader)
     assert objs == [MyTestClass1(x=1), MyTestClass1(x=1, y=2, z=3)]
+    # deletions from the registry should not impact other threads
     del MyLoader.yaml_constructors()["!tag1"]
