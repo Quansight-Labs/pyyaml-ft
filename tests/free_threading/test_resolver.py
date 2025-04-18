@@ -1,17 +1,7 @@
 import re
 import yaml
 
-
-class Dice(tuple):
-    def __new__(cls, a, b):
-        return tuple.__new__(cls, (a, b))
-
-    def __repr__(self):
-        return "Dice(%s,%s)" % self
-
-
-def dice_representer(dumper, data):
-    return dumper.represent_scalar("!dice", "%sd%s" % data)
+from .utils import Dice, dice_representer
 
 
 def _convert_node(node):

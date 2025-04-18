@@ -1,24 +1,9 @@
 import yaml
 
+from .utils import MyTestClass1, represent1
 
 class MyDumper(yaml.CDumper):
     pass
-
-
-class MyTestClass1:
-    def __init__(self, x, y=0, z=0):
-        self.x = x
-        self.y = y
-        self.z = z
-    def __eq__(self, other):
-        if isinstance(other, MyTestClass1):
-            return self.__class__, self.__dict__ == other.__class__, other.__dict__
-        else:
-            return False
-
-
-def represent1(representer, native):
-    return representer.represent_mapping("!tag1", native.__dict__)
 
 
 def test_default_representers_registered():

@@ -4,24 +4,7 @@ import threading
 
 import yaml
 
-
-class Dice(tuple):
-    def __new__(cls, a, b):
-        return tuple.__new__(cls, (a, b))
-
-    def __repr__(self):
-        return "Dice(%s,%s)" % self
-
-
-def dice_constructor(loader, node):
-    value = loader.construct_scalar(node)
-    a, b = map(int, value.split('d'))
-    return Dice(a, b)
-
-
-def dice_representer(dumper, data):
-    return dumper.represent_scalar("!dice", "%sd%s" % data)
-
+from .utils import Dice, dice_constructor
 
 # Different YAML content types for testing
 YAML_LOAD_SAMPLES = [

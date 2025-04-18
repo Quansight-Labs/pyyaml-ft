@@ -2,30 +2,11 @@ import io
 
 import yaml
 
+from .utils import MyTestClass1, construct1
+
 
 class MyLoader(yaml.CLoader):
     pass
-
-
-class MyTestClass1:
-    def __init__(self, x, y=0, z=0):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def __eq__(self, other):
-        if isinstance(other, MyTestClass1):
-            return self.__class__, self.__dict__ == other.__class__, other.__dict__
-        else:
-            return False
-
-    def __repr__(self):
-        return f"MyTestClass1(x={self.x}, y={self.y}, z={self.z})"
-
-
-def construct1(constructor, node):
-    mapping = constructor.construct_mapping(node)
-    return MyTestClass1(**mapping)
 
 
 def test_default_constructors_registered():
