@@ -10,16 +10,85 @@ __all__ = [
 
 from .error import *
 from .nodes import *
+from .registry import RegistryMeta, ConstructorRegistry
 
+import threading
 import collections.abc, datetime, base64, binascii, re, sys, types
 
 class ConstructorError(MarkedYAMLError):
     pass
 
-class BaseConstructor:
 
-    yaml_constructors = {}
-    yaml_multi_constructors = {}
+class ConstructorSetup(threading.local):
+    def __init__(self):
+        self.initialized = False
+
+    def ensure_initialized(self):
+        if not self.initialized:
+            self.initialized = True
+            setup_constructors()
+
+
+class BaseConstructor(metaclass=RegistryMeta):
+    """
+    Base class for all constructors.
+
+    Some information on the `setup` and `registry` class attributes:
+    - Each class in the class hierarchy should have its own registry.
+      If it's not initialized, it should inherit the parent's registry.
+      As soon as it gets initialized, it should copy over all of the
+      parent's registry items and start growing independently.
+    - `setup` is initialized in the base class and is not
+      overwritten in subclasses. Its aim is to initialize the registry
+      with the default constructors *once* per thread for all the classes
+      in the hierarchy.
+    - `registry` is initialized in the base class and is
+      overwritten in subclasses (done in `RegistryMeta`). Its aim is
+      to have a thread-local registry for constructors. `yaml_constructors`
+      is a property that checks if the registry is initialized for the
+      current thread and returns it if it is. If it's not, it walks up the
+      MRO until it finds a class that has an initialized registry (remember
+      that the base class always starts out initialized so the recursion
+      will certainly stop there).
+
+    The following diagram shows the inheritance structure of the constructor
+    and resolver classes (the same exact thing applies to representers and
+    reolvers).
+
+    ┌────────────────────────────────┐    ┌────────────────────────────┐
+    │       Base Constructor         │    │       Base Resolver        │
+    │                                │    │                            │
+    │ constructor_setup:             │    │ resolver_setup:            │
+    │  Starts uninitialized. Does    │    │  Same properties with      │
+    │  not get overwritten by        │    │  constructor_setup.        │
+    │  subclasses.                   │    │                            │
+    │                                │    │                            │
+    │ constructor_registry:          │    │ resolver_registry:         │
+    │  Starts initialized for Base   │    │  Same properties with      │
+    │  and uninitialized for all     │    │  constructor_registry.     │
+    │  subclasses. Gets overwritten  │    │                            │
+    │  in subclasses.                │    │                            │
+    │                                │    │                            │
+    └───────────────┬────────────────┘    └─────────────┬──────────────┘
+                    │                                   │               
+                    ▼                                   │               
+    ┌────────────────────────────────┐                  │               
+    │       Safe Constructor         │                  │               
+    └───────────────┬────────────────┘                  │               
+                    │                                   │               
+                    ▼                                   ▼               
+    ┌────────────────────────────────┐    ┌────────────────────────────┐
+    │       Constructor              │    │       Resolver             │
+    └───────────────┬────────────────┘    └─────────────┬──────────────┘
+                    │                                   │               
+                    │                                   │               
+                    │       ┌───────────────────┐       │               
+                    └──────►│    Loader         │◄──────┘               
+                            └───────────────────┘                       
+    """
+
+    constructor_setup = ConstructorSetup() 
+    constructor_registry = ConstructorRegistry(yaml_constructors_initialized=True, yaml_multi_constructors_initialized=True)
 
     def __init__(self):
         self.constructed_objects = {}
@@ -76,20 +145,22 @@ class BaseConstructor:
         self.recursive_objects[node] = None
         constructor = None
         tag_suffix = None
-        if node.tag in self.yaml_constructors:
-            constructor = self.yaml_constructors[node.tag]
+        yaml_constructors = self.yaml_constructors()
+        yaml_multi_constructors = self.yaml_multi_constructors()
+        if node.tag in yaml_constructors:
+            constructor = yaml_constructors[node.tag]
         else:
-            for tag_prefix in self.yaml_multi_constructors:
+            for tag_prefix in yaml_multi_constructors:
                 if tag_prefix is not None and node.tag.startswith(tag_prefix):
                     tag_suffix = node.tag[len(tag_prefix):]
-                    constructor = self.yaml_multi_constructors[tag_prefix]
+                    constructor = yaml_multi_constructors[tag_prefix]
                     break
             else:
-                if None in self.yaml_multi_constructors:
+                if None in yaml_multi_constructors:
                     tag_suffix = node.tag
-                    constructor = self.yaml_multi_constructors[None]
-                elif None in self.yaml_constructors:
-                    constructor = self.yaml_constructors[None]
+                    constructor = yaml_multi_constructors[None]
+                elif None in yaml_constructors:
+                    constructor = yaml_constructors[None]
                 elif isinstance(node, ScalarNode):
                     constructor = self.__class__.construct_scalar
                 elif isinstance(node, SequenceNode):
@@ -157,16 +228,46 @@ class BaseConstructor:
         return pairs
 
     @classmethod
+    def yaml_constructors(cls):
+        cls.constructor_setup.ensure_initialized()
+
+        if cls.constructor_registry.yaml_constructors_initialized:
+            return cls.constructor_registry.yaml_constructors
+
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_constructors') and c is not cls)
+        return constructor_cls.yaml_constructors()
+
+    @classmethod
+    def yaml_multi_constructors(cls):
+        cls.constructor_setup.ensure_initialized()
+
+        if cls.constructor_registry.yaml_multi_constructors_initialized:
+            return cls.constructor_registry.yaml_multi_constructors
+
+        constructor_cls = next(c for c in cls.mro() if hasattr(c, 'yaml_multi_constructors') and c is not cls)
+        return constructor_cls.yaml_multi_constructors()
+
+    @classmethod
+    def _ensure_yaml_constructors_initialized(cls):
+        if not cls.constructor_registry.yaml_constructors_initialized:
+            cls.constructor_registry.yaml_constructors = cls.yaml_constructors().copy()
+            cls.constructor_registry.yaml_constructors_initialized = True
+
+    @classmethod
+    def _ensure_yaml_multi_constructors_initialized(cls):
+        if not cls.constructor_registry.yaml_multi_constructors_initialized:
+            cls.constructor_registry.yaml_multi_constructors = cls.yaml_multi_constructors().copy()
+            cls.constructor_registry.yaml_multi_constructors_initialized = True
+
+    @classmethod
     def add_constructor(cls, tag, constructor):
-        if not 'yaml_constructors' in cls.__dict__:
-            cls.yaml_constructors = cls.yaml_constructors.copy()
-        cls.yaml_constructors[tag] = constructor
+        cls._ensure_yaml_constructors_initialized()
+        cls.constructor_registry.yaml_constructors[tag] = constructor
 
     @classmethod
     def add_multi_constructor(cls, tag_prefix, multi_constructor):
-        if not 'yaml_multi_constructors' in cls.__dict__:
-            cls.yaml_multi_constructors = cls.yaml_multi_constructors.copy()
-        cls.yaml_multi_constructors[tag_prefix] = multi_constructor
+        cls._ensure_yaml_multi_constructors_initialized()
+        cls.constructor_registry.yaml_multi_constructors[tag_prefix] = multi_constructor
 
 class SafeConstructor(BaseConstructor):
 
@@ -428,56 +529,6 @@ class SafeConstructor(BaseConstructor):
                 "could not determine a constructor for the tag %r" % node.tag,
                 node.start_mark)
 
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:null',
-        SafeConstructor.construct_yaml_null)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:bool',
-        SafeConstructor.construct_yaml_bool)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:int',
-        SafeConstructor.construct_yaml_int)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:float',
-        SafeConstructor.construct_yaml_float)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:binary',
-        SafeConstructor.construct_yaml_binary)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:timestamp',
-        SafeConstructor.construct_yaml_timestamp)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:omap',
-        SafeConstructor.construct_yaml_omap)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:pairs',
-        SafeConstructor.construct_yaml_pairs)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:set',
-        SafeConstructor.construct_yaml_set)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:str',
-        SafeConstructor.construct_yaml_str)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:seq',
-        SafeConstructor.construct_yaml_seq)
-
-SafeConstructor.add_constructor(
-        'tag:yaml.org,2002:map',
-        SafeConstructor.construct_yaml_map)
-
-SafeConstructor.add_constructor(None,
-        SafeConstructor.construct_undefined)
 
 class FullConstructor(SafeConstructor):
     # 'extend' is blacklisted because it is used by
@@ -658,57 +709,6 @@ class FullConstructor(SafeConstructor):
     def construct_python_object_new(self, suffix, node):
         return self.construct_python_object_apply(suffix, node, newobj=True)
 
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/none',
-    FullConstructor.construct_yaml_null)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/bool',
-    FullConstructor.construct_yaml_bool)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/str',
-    FullConstructor.construct_python_str)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/unicode',
-    FullConstructor.construct_python_unicode)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/bytes',
-    FullConstructor.construct_python_bytes)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/int',
-    FullConstructor.construct_yaml_int)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/long',
-    FullConstructor.construct_python_long)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/float',
-    FullConstructor.construct_yaml_float)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/complex',
-    FullConstructor.construct_python_complex)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/list',
-    FullConstructor.construct_yaml_seq)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/tuple',
-    FullConstructor.construct_python_tuple)
-
-FullConstructor.add_constructor(
-    'tag:yaml.org,2002:python/dict',
-    FullConstructor.construct_yaml_map)
-
-FullConstructor.add_multi_constructor(
-    'tag:yaml.org,2002:python/name:',
-    FullConstructor.construct_python_name)
 
 class UnsafeConstructor(FullConstructor):
 
@@ -726,23 +726,130 @@ class UnsafeConstructor(FullConstructor):
         return super(UnsafeConstructor, self).set_python_instance_state(
             instance, state, unsafe=True)
 
-UnsafeConstructor.add_multi_constructor(
-    'tag:yaml.org,2002:python/module:',
-    UnsafeConstructor.construct_python_module)
-
-UnsafeConstructor.add_multi_constructor(
-    'tag:yaml.org,2002:python/object:',
-    UnsafeConstructor.construct_python_object)
-
-UnsafeConstructor.add_multi_constructor(
-    'tag:yaml.org,2002:python/object/new:',
-    UnsafeConstructor.construct_python_object_new)
-
-UnsafeConstructor.add_multi_constructor(
-    'tag:yaml.org,2002:python/object/apply:',
-    UnsafeConstructor.construct_python_object_apply)
 
 # Constructor is same as UnsafeConstructor. Need to leave this in place in case
 # people have extended it directly.
 class Constructor(UnsafeConstructor):
     pass
+
+
+def setup_constructors():
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:null',
+        SafeConstructor.construct_yaml_null)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:bool',
+        SafeConstructor.construct_yaml_bool)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:int',
+        SafeConstructor.construct_yaml_int)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:float',
+        SafeConstructor.construct_yaml_float)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:binary',
+        SafeConstructor.construct_yaml_binary)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:timestamp',
+        SafeConstructor.construct_yaml_timestamp)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:omap',
+        SafeConstructor.construct_yaml_omap)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:pairs',
+        SafeConstructor.construct_yaml_pairs)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:set',
+        SafeConstructor.construct_yaml_set)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:str',
+        SafeConstructor.construct_yaml_str)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:seq',
+        SafeConstructor.construct_yaml_seq)
+
+    SafeConstructor.add_constructor(
+        'tag:yaml.org,2002:map',
+        SafeConstructor.construct_yaml_map)
+
+    SafeConstructor.add_constructor(
+        None,
+        SafeConstructor.construct_undefined)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/none',
+        FullConstructor.construct_yaml_null)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/bool',
+        FullConstructor.construct_yaml_bool)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/str',
+        FullConstructor.construct_python_str)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/unicode',
+        FullConstructor.construct_python_unicode)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/bytes',
+        FullConstructor.construct_python_bytes)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/int',
+        FullConstructor.construct_yaml_int)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/long',
+        FullConstructor.construct_python_long)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/float',
+        FullConstructor.construct_yaml_float)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/complex',
+        FullConstructor.construct_python_complex)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/list',
+        FullConstructor.construct_yaml_seq)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/tuple',
+        FullConstructor.construct_python_tuple)
+
+    FullConstructor.add_constructor(
+        'tag:yaml.org,2002:python/dict',
+        FullConstructor.construct_yaml_map)
+
+    FullConstructor.add_multi_constructor(
+        'tag:yaml.org,2002:python/name:',
+        FullConstructor.construct_python_name)
+
+    UnsafeConstructor.add_multi_constructor(
+        'tag:yaml.org,2002:python/module:',
+        UnsafeConstructor.construct_python_module)
+
+    UnsafeConstructor.add_multi_constructor(
+        'tag:yaml.org,2002:python/object:',
+        UnsafeConstructor.construct_python_object)
+
+    UnsafeConstructor.add_multi_constructor(
+        'tag:yaml.org,2002:python/object/new:',
+        UnsafeConstructor.construct_python_object_new)
+
+    UnsafeConstructor.add_multi_constructor(
+        'tag:yaml.org,2002:python/object/apply:',
+        UnsafeConstructor.construct_python_object_apply)
