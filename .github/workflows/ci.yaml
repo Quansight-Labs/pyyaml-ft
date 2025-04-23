@@ -204,6 +204,8 @@ jobs:
         CIBW_MUSLLINUX_AARCH64_IMAGE: ${{ matrix.musllinux_img || 'musllinux_1_1' }}
         CIBW_TEST_COMMAND: pytest {package} && pytest --parallel-threads=auto --iterations=20 {package}/tests/free_threading
         CIBW_TEST_REQUIRES: pytest pytest-run-parallel
+        CIBW_BUILD_FRONTEND: "pip${{ startsWith(matrix.spec, 'cp313t') && '; args: --no-build-isolation' || '' }}"
+        CIBW_BEFORE_BUILD: ls -l {project} && bash {package}/packaging/build/cibw_before_build.sh
       run: |
         set -eux
 
@@ -219,7 +221,7 @@ jobs:
         pyyaml_build_config='{"force":1, "library_dirs": ["../libyaml/src/.libs"], "include_dirs": ["../libyaml/include"]}'
         EOF
 
-        CIBW_BEFORE_BUILD="ls -l {project}" python3 -m cibuildwheel --config-file $(pwd)/build_config.toml --platform auto --output-dir ./dist ./pyyaml
+        python3 -m cibuildwheel --config-file $(pwd)/build_config.toml --platform auto --output-dir ./dist ./pyyaml
 
         echo "artifact_name=$(ls ./dist/)" >> "$GITHUB_OUTPUT"
         # FIXME: ensure exactly one artifact
@@ -335,6 +337,8 @@ jobs:
         CIBW_BUILD_VERBOSITY: 1
         CIBW_TEST_COMMAND: pytest {package} && pytest --parallel-threads=auto --iterations=20 {package}/tests/free_threading
         CIBW_TEST_REQUIRES: pytest pytest-run-parallel
+        CIBW_BUILD_FRONTEND: "pip${{ startsWith(matrix.spec, 'cp313t') && '; args: --no-build-isolation' || '' }}"
+        CIBW_BEFORE_BUILD: bash {package}/packaging/build/cibw_before_build.sh
         LIBRARY_PATH: ../libyaml/src/.libs
         MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '10.9' }}
         PYYAML_FORCE_CYTHON: 1
@@ -463,7 +467,8 @@ jobs:
         CIBW_BEFORE_TEST: ls -l {package}
         CIBW_TEST_COMMAND: pytest {package} && pytest --parallel-threads=auto --iterations=20 {package}/tests/free_threading
         CIBW_TEST_REQUIRES: pytest pytest-run-parallel
-        CIBW_PRERELEASE_PYTHONS: 1
+        CIBW_BUILD_FRONTEND: "pip${{ startsWith(matrix.spec, 'cp313t') && '; args: --no-build-isolation' || '' }}"
+        CIBW_BEFORE_BUILD: bash {package}/packaging/build/cibw_before_build.sh
         #CIBW_CONFIG_SETTINGS: |
         #  pyyaml_build_config='{"include_dirs": ["libyaml/include"], "library_dirs": ["libyaml/build/Release"], "define": [["YAML_DECLARE_STATIC", 1]], "force": 1}'
       run: |
