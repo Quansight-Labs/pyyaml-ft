@@ -81,6 +81,10 @@ the port is merged upstream.
     in "<file>", line 1, column 3
   ```
 
+  If you see new errors in multithreaded programs using `PyYAML-ft` that work with
+  `PyYAML`, you may need to add calls to `yaml.add_constructor` in your thread worker
+  function or worker initialization function.
+
 ### Python versions support
 
 Because PyYAML-ft is only aiming to exist for as long as upstream PyYAML
