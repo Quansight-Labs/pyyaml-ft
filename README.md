@@ -81,6 +81,33 @@ the port is merged upstream.
     in "<file>", line 1, column 3
   ```
 
+### Python versions support
+
+Because PyYAML-ft is only aiming to exist for as long as upstream PyYAML
+does not support the free-threaded build, we recommend that users only
+conditionally switch to PyYAML-ft.
+
+At this time, PyYAML-ft **only supports Python 3.13 and 3.13t (i.e. the
+free-threaded build of 3.13)**. To switch to it, you can do the following
+in your `requirements.txt` file:
+
+```requirements.txt
+...
+PyYAML; python_version < '3.13'
+PyYAML-ft; python_version >= '3.13'
+```
+
+If you're developing a library that depends on PyYAML and you're using
+`pyproject.toml` to specify your dependencies, you can do the following:
+
+```toml
+dependencies = [
+  ...,
+  "PyYAML; python_version<'3.13'",
+  "PyYAML-ft; python_version>='3.13'",
+]
+```
+
 
 ## Installation
 
