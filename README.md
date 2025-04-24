@@ -82,7 +82,8 @@ the port is merged upstream.
   ```
 
   If you see new errors in multithreaded programs using `PyYAML-ft` that work with
-  `PyYAML`, you may need to add calls to `yaml.add_constructor` in your thread worker
+  `PyYAML`, you may need to add calls to `yaml.add_constructor`, `yaml.add_representer`
+  `yaml.add_implicit_resolver` or `yaml.add_path_resolver` in your thread worker
   function or worker initialization function.
 
 ### Python versions support
