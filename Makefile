@@ -41,7 +41,7 @@ clean:
 	${PYTHON} setup.py --with-libyaml clean -a
 	rm -fr \
 	    dist/ \
-	    lib/PyYAML.egg-info/ \
+	    lib/PyYAML_ft.egg-info/ \
 	    lib/yaml/__pycache__/ \
 	    tests/__pycache__/ \
 	    tests/legacy_tests/__pycache__/ \
