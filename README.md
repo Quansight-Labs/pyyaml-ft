@@ -19,7 +19,7 @@ in real-world applications. Our rationale with this fork is to implement support
 the free-threaded build, so that PyYAML can be tested with it by its users, even before
 the port is merged upstream.
 
-### Differences to upstream
+### Differences compared with upstream
 
 - This fork uses Cython 3.1.0b1 which supports the free-threaded build, but is still in
   beta. Its support for the free-threaded build is also still experimental.
@@ -60,7 +60,7 @@ the port is merged upstream.
           objs = yaml.load(yamlcode, Loader=yaml.CLoader)
           print(f"\t{objs=}")
       except Exception as e:
-          print(f"\tException occurred{e!s}")
+          print(f"\tException occurred: {e!s}")
 
   yaml.add_constructor("!dice", construct_dice, Loader=yaml.CLoader)
   load_dice()
@@ -77,7 +77,7 @@ the port is merged upstream.
   Thread MainThread
           objs=[Dice(1, 6), Dice(4, 4)]
   Thread Thread-1 (load_dice)
-          Exception occurredcould not determine a constructor for the tag '!dice'
+          Exception occurred: could not determine a constructor for the tag '!dice'
     in "<file>", line 1, column 3
   ```
 

@@ -1,6 +1,6 @@
 
 NAME = 'PyYAML-ft'
-VERSION = '0.1.0.dev0'
+VERSION = '7.0.0.dev0'
 DESCRIPTION = "YAML parser and emitter for Python with support for free-threading"
 LONG_DESCRIPTION = """\
 YAML is a data serialization format designed for human readability
@@ -16,11 +16,11 @@ PyYAML is applicable for a broad range of tasks from complex
 configuration files to object serialization and persistence.
 
 PyYAML-ft is a fork of PyYAML that adds support for free-threading."""
-AUTHOR = "Kirill Simonov"
-AUTHOR_EMAIL = 'xi@resolvent.net'
+AUTHOR = "Lysandros Nikolaou"
+AUTHOR_EMAIL = "lisandrosnik@gmail.com"
 LICENSE = "MIT"
 PLATFORMS = "Any"
-URL = "https://pyyaml.org/"
+URL = "https://github.com/Quansight-Labs/pyyaml/"
 DOWNLOAD_URL = "https://pypi.org/project/PyYAML-ft/"
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
