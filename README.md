@@ -144,7 +144,7 @@ To build PyYAML-ft from source:
 
 1. Run `python3.13 -m pip install --no-build-isolation .`. This will build PyYAML-ft
    from source and install it in the newly created virtual environment. By default, the
-   installation process will try to install the LibYAML binding as well, but will
+   installation process will try to install the LibYAML bindings as well, but will
    fail silently if it cannot and instead use the pure-Python version.
 
    To get the latest version of the LibYAML bindings, you can use the `libyaml.sh`
@@ -168,7 +168,7 @@ To build PyYAML-ft from source:
 To test PyYAML-ft:
 
 1. Install `pytest` with `python3.13 -m pip install pytest`.
-1. Run the test by just invoking `pytest` in the root directory of the project.
+1. Run the tests by just invoking `pytest` in the root directory of the project.
 1. Optionally, you can also run the free-threading tests with `pytest-run-parallel`:
 
    ```bash
