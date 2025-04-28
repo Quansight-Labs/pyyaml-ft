@@ -113,7 +113,6 @@ dependencies = [
 ]
 ```
 
-
 ## Installation
 
 To install, type `pip install PyYAML-ft`.
@@ -127,6 +126,55 @@ LibYAML-based parser and emitter as follows:
 If you don't trust the input YAML stream, you should use:
 
     >>> yaml.safe_load(stream)
+
+## Building from source and testing
+
+To build PyYAML-ft from source:
+
+1. Clone [the fork repository](https://github.com/Quansight-Labs/pyyaml) with
+   `git clone https://github.com/Quansight-Labs/pyyaml`.
+1. Create a new virtual environment with `python3.13 -m venv .venv`.
+1. Run `source .venv/bin/activate` to activate your new virtual environment.
+1. Install the build dependencies with:
+
+   ```bash
+   python3.13 -m pip install setuptools wheel
+   python3.13 -m pip install --pre Cython==3.1.0b1
+   ```
+
+1. Run `python3.13 -m pip install --no-build-isolation .`. This will build PyYAML-ft
+   from source and install it in the newly created virtual environment. By default, the
+   installation process will try to install the LibYAML binding as well, but will
+   fail silently if it cannot and instead use the pure-Python version.
+
+   To get the latest version of the LibYAML bindings, you can use the `libyaml.sh`
+   installation script:
+
+   ```bash
+   ./packaging/build/libyaml.sh  # This will install the bindings
+   ```
+
+   After the bindings are installed, you can force installing the bindings with the
+   following invocation:
+
+   ```bash
+   PYYAML_FORCE_CYTHON=1 \
+   PYYAML_FORCE_LIBYAML=1 \
+   CFLAGS="-Ilibyaml/include" \
+   LDFLAGS="-Llibyaml/src/.libs" \
+   python -m pip install -v --no-build-isolation .
+   ```
+
+To test PyYAML-ft:
+
+1. Install `pytest` with `python3.13 -m pip install pytest`.
+1. Run the test by just invoking `pytest` in the root directory of the project.
+1. Optionally, you can also run the free-threading tests with `pytest-run-parallel`:
+
+   ```bash
+   python3.13 -m pip install pytest-run-parallel
+   python3.13 -m pytest --parallel-threads=auto --iterations=20 tests/free_threading
+   ```
 
 ## Further Information
 
