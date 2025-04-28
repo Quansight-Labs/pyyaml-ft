@@ -1,6 +1,6 @@
 
 NAME = 'PyYAML-ft'
-VERSION = '7.0.0'
+VERSION = '7.0.1.dev0'
 DESCRIPTION = "YAML parser and emitter for Python with support for free-threading"
 LONG_DESCRIPTION = """\
 YAML is a data serialization format designed for human readability
