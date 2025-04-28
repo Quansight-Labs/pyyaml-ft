@@ -3,6 +3,10 @@ For a complete changelog, see:
 
 * https://github.com/Quansight-Labs/pyyaml/commits/
 
+7.0.1.dev0 (TBD)
+
+* TBD
+
 7.0.0 (2025-04-28)
 
 * https://github.com/Quansight-Labs/pyyaml/pull/2 -- Mark extension as free-threading compatible
