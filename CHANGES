@@ -1,11 +1,15 @@
 
 For a complete changelog, see:
 
-* https://github.com/yaml/pyyaml/commits/
+* https://github.com/Quansight-Labs/pyyaml/commits/
 
-7.0.0.dev0 (TBD)
+7.0.0 (2025-04-28)
 
-* TBD
+* https://github.com/Quansight-Labs/pyyaml/pull/2 -- Mark extension as free-threading compatible
+  and resolve Python-level threading issues
+* https://github.com/Quansight-Labs/pyyaml/pull/4 - Build cp313 and cp313t wheels
+* https://github.com/Quansight-Labs/pyyaml/pull/5 - Rename to PyYAML-ft everywhere
+* https://github.com/Quansight-Labs/pyyaml/pull/7 - Add CI job to publish to PyPI
 
 6.0.2 (2024-08-06)
 
