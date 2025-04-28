@@ -3,7 +3,7 @@ import pathlib
 NAME = 'PyYAML-ft'
 VERSION = '7.0.0'
 DESCRIPTION = "YAML parser and emitter for Python with support for free-threading"
-LONG_DESCRIPTION = (pathlib.Path(__file__).parent / 'README.md').read_text()
+LONG_DESCRIPTION = (pathlib.Path(__file__).parent / 'README.md').read_text(encoding="utf-8")
 AUTHOR = "Lysandros Nikolaou"
 AUTHOR_EMAIL = "lisandrosnik@gmail.com"
 LICENSE = "MIT"
