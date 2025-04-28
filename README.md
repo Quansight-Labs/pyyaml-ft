@@ -116,17 +116,10 @@ dependencies = [
 
 ## Installation
 
-To install, type `python setup.py install`.
+To install, type `pip install PyYAML-ft`.
 
-By default, the `setup.py` script checks whether LibYAML is installed and if
-so, builds and installs LibYAML bindings.
-To skip the check and force installation of LibYAML bindings, use the option
-`--with-libyaml`: `python setup.py --with-libyaml install`.
-To disable the check and skip building and installing LibYAML bindings, use
-`--without-libyaml`: `python setup.py --without-libyaml install`.
-
-When LibYAML bindings are installed, you may use fast LibYAML-based parser and
-emitter as follows:
+When LibYAML bindings are installed (enabled by default), you may use the fast
+LibYAML-based parser and emitter as follows:
 
     >>> yaml.load(stream, Loader=yaml.CLoader)
     >>> yaml.dump(data, Dumper=yaml.CDumper)
@@ -134,11 +127,6 @@ emitter as follows:
 If you don't trust the input YAML stream, you should use:
 
     >>> yaml.safe_load(stream)
-
-## Testing
-
-PyYAML includes a comprehensive test suite.
-To run the tests, type `python setup.py test`.
 
 ## Further Information
 
@@ -159,6 +147,8 @@ To run the tests, type `python setup.py test`.
 The PyYAML module was written by Kirill Simonov <xi@resolvent.net>.
 It is currently maintained by the YAML and Python communities.
 
-PyYAML-ft is released under the MIT license.
+PyYAML-ft was forked by Quansight-Labs and is currently maintained by
+a team of engineers working on ecosystem-wide support for free-threading.
+It is released under the MIT license.
 
 See the file LICENSE for more details.

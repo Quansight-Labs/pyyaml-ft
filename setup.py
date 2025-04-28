@@ -1,21 +1,9 @@
+import pathlib
 
 NAME = 'PyYAML-ft'
 VERSION = '7.0.0'
 DESCRIPTION = "YAML parser and emitter for Python with support for free-threading"
-LONG_DESCRIPTION = """\
-YAML is a data serialization format designed for human readability
-and interaction with scripting languages.  PyYAML is a YAML parser
-and emitter for Python.
-
-PyYAML features a complete YAML 1.1 parser, Unicode support, pickle
-support, capable extension API, and sensible error messages.  PyYAML
-supports standard YAML tags and provides Python-specific tags that
-allow to represent an arbitrary Python object.
-
-PyYAML is applicable for a broad range of tasks from complex
-configuration files to object serialization and persistence.
-
-PyYAML-ft is a fork of PyYAML that adds support for free-threading."""
+LONG_DESCRIPTION = (pathlib.Path(__file__).parent / 'README.md').read_text()
 AUTHOR = "Lysandros Nikolaou"
 AUTHOR_EMAIL = "lisandrosnik@gmail.com"
 LICENSE = "MIT"
@@ -29,12 +17,6 @@ CLASSIFIERS = [
     "Operating System :: OS Independent",
     "Programming Language :: Cython",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
@@ -338,6 +320,7 @@ if __name__ == '__main__':
         version=VERSION,
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
+        long_description_content_type="text/markdown",
         author=AUTHOR,
         author_email=AUTHOR_EMAIL,
         license=LICENSE,
@@ -357,5 +340,5 @@ if __name__ == '__main__':
 
         distclass=Distribution,
         cmdclass=cmdclass,
-        python_requires='>=3.8',
+        python_requires='>=3.13',
     )
