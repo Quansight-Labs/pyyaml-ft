@@ -21,7 +21,7 @@ the port is merged upstream.
 
 ### Differences compared with upstream
 
-- This fork uses Cython 3.1.0b1 which supports the free-threaded build, but is still in
+- This fork uses Cython 3.1.0rc1 which supports the free-threaded build, but is still in
   beta. Its support for the free-threaded build is also still experimental.
 - `add_constructor`, `add_representer` and `add_*resolver` now all use thread-local
   registries, so you will have to explicitly register your custom constrcutors,
@@ -138,8 +138,7 @@ To build PyYAML-ft from source:
 1. Install the build dependencies with:
 
    ```bash
-   python3.13 -m pip install setuptools wheel
-   python3.13 -m pip install --pre Cython==3.1.0b1
+   python3.13 -m pip install Cython==3.1.0rc1 setuptools wheel
    ```
 
 1. Run `python3.13 -m pip install --no-build-isolation .`. This will build PyYAML-ft
