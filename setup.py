@@ -8,7 +8,7 @@ AUTHOR = "Lysandros Nikolaou"
 AUTHOR_EMAIL = "lisandrosnik@gmail.com"
 LICENSE = "MIT"
 PLATFORMS = "Any"
-URL = "https://github.com/Quansight-Labs/pyyaml/"
+URL = "https://github.com/Quansight-Labs/pyyaml-ft/"
 DOWNLOAD_URL = "https://pypi.org/project/PyYAML-ft/"
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
@@ -24,11 +24,11 @@ CLASSIFIERS = [
     "Topic :: Text Processing :: Markup",
 ]
 PROJECT_URLS = {
-   'Bug Tracker': 'https://github.com/Quansight-Labs/pyyaml/issues',
-   'CI': 'https://github.com/Quansight-Labs/pyyaml/actions',
+   'Bug Tracker': 'https://github.com/Quansight-Labs/pyyaml-ft/issues',
+   'CI': 'https://github.com/Quansight-Labs/pyyaml-ft/actions',
    'Documentation': 'https://pyyaml.org/wiki/PyYAMLDocumentation',
    'Mailing lists': 'http://lists.sourceforge.net/lists/listinfo/yaml-core',
-   'Source Code': 'https://github.com/Quansight-Labs/pyyaml',
+   'Source Code': 'https://github.com/Quansight-Labs/pyyaml-ft',
 }
 
 LIBYAML_CHECK = """

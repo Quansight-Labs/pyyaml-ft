@@ -131,8 +131,8 @@ If you don't trust the input YAML stream, you should use:
 
 To build PyYAML-ft from source:
 
-1. Clone [the fork repository](https://github.com/Quansight-Labs/pyyaml) with
-   `git clone https://github.com/Quansight-Labs/pyyaml`.
+1. Clone [the fork repository](https://github.com/Quansight-Labs/pyyaml-ft) with
+   `git clone https://github.com/Quansight-Labs/pyyaml-ft`.
 1. Create a new virtual environment with `python3.13 -m venv .venv`.
 1. Run `source .venv/bin/activate` to activate your new virtual environment.
 1. Install the build dependencies with:
@@ -187,7 +187,7 @@ To test PyYAML-ft:
   IRC #pyyaml irc.libera.chat
 
 * Submit bug reports and feature requests to the
-  [PyYAML-ft bug tracker](https://github.com/Quansight-Labs/pyyaml/issues).
+  [PyYAML-ft bug tracker](https://github.com/Quansight-Labs/pyyaml-ft/issues).
 
 ## License
 
