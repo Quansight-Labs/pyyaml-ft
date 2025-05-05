@@ -2,14 +2,14 @@ import yaml
 
 from .utils import MyTestClass1, represent1
 
-class MyDumper(yaml.CDumper):
+class MyDumper(yaml.Dumper):
     pass
 
 
 def test_default_representers_registered():
     obj = [("hello", "world")]
 
-    yamlcode = yaml.dump(obj, Dumper=yaml.CDumper)
+    yamlcode = yaml.dump(obj, Dumper=yaml.Dumper)
     assert yamlcode == """\
 - !!python/tuple
   - hello

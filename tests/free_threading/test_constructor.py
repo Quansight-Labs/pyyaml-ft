@@ -5,7 +5,7 @@ import yaml
 from .utils import MyTestClass1, construct1
 
 
-class MyLoader(yaml.CLoader):
+class MyLoader(yaml.Loader):
     pass
 
 
@@ -14,7 +14,7 @@ def test_default_constructors_registered():
 - !!python/tuple [hello, world]
 """)
 
-    objs = yaml.load(yamlcode, Loader=yaml.CLoader)
+    objs = yaml.load(yamlcode, Loader=yaml.Loader)
     assert objs == [("hello", "world")]
 
 

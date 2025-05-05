@@ -131,11 +131,11 @@ rolls_no_resolver:
 ]
 
 
-class MyLoader(yaml.CLoader):
+class MyLoader(yaml.Loader):
     pass
 
 
-class MyDumper(yaml.CDumper):
+class MyDumper(yaml.Dumper):
     pass
 
 

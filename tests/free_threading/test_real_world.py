@@ -66,7 +66,7 @@ def _create_yaml_file(directory, index, valid=True):
     workflow = _generate_random_github_workflow()
     with open(filepath, 'w') as f:
         if valid:
-            yaml.dump(workflow, f, Dumper=yaml.CDumper)
+            yaml.dump(workflow, f, Dumper=yaml.Dumper)
         else:
             # Introduce an error in the YAML structure
             f.write("name: Invalid Workflow\non: [push\njobs:")
@@ -78,7 +78,7 @@ def _parse_yaml_file(filepath, original_data, expected_valid):
 
     try:
         with open(filepath, 'r') as f:
-            data = yaml.load(f, Loader=yaml.CLoader)
+            data = yaml.load(f, Loader=yaml.Loader)
         assert expected_valid and data == original_data
     except yaml.YAMLError:
         assert not expected_valid
