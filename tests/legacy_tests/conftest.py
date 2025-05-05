@@ -23,6 +23,9 @@ collect_ignore_glob = ['data/*']
 
 
 class PyYAMLItem(pytest.Item):
+    # silence warning from pytest-run-parallel
+    _parallel_custom_item = True
+
     def __init__(self, parent=None, config=None, session=None, nodeid=None, function=None, filenames=None, **kwargs):
         self._function = function
         self._fargs = filenames or []
