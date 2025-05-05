@@ -6,6 +6,17 @@ import pytest
 
 import yaml
 
+try:
+    from yaml import CDumper as Dumper
+except ImportError:
+    from yaml import Dumper
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
+
 
 NUM_FILES = 200
 NUM_THREADS = 8
@@ -66,7 +77,7 @@ def _create_yaml_file(directory, index, valid=True):
     workflow = _generate_random_github_workflow()
     with open(filepath, 'w') as f:
         if valid:
-            yaml.dump(workflow, f, Dumper=yaml.Dumper)
+            yaml.dump(workflow, f, Dumper=Dumper)
         else:
             # Introduce an error in the YAML structure
             f.write("name: Invalid Workflow\non: [push\njobs:")
@@ -78,7 +89,7 @@ def _parse_yaml_file(filepath, original_data, expected_valid):
 
     try:
         with open(filepath, 'r') as f:
-            data = yaml.load(f, Loader=yaml.Loader)
+            data = yaml.load(f, Loader=Loader)
         assert expected_valid and data == original_data
     except yaml.YAMLError:
         assert not expected_valid
