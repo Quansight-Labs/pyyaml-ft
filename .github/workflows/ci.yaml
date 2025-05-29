@@ -218,9 +218,9 @@ jobs:
         CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_img || '' }}
         CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_img || '' }}
         CIBW_MANYLINUX_S390X_IMAGE: ${{ matrix.manylinux_img || '' }}
-        CIBW_MUSLLINUX_X86_64_IMAGE: ${{ matrix.musllinux_img || 'musllinux_1_1' }}
-        CIBW_MUSLLINUX_I686_IMAGE: ${{ matrix.musllinux_img || 'musllinux_1_1' }}
-        CIBW_MUSLLINUX_AARCH64_IMAGE: ${{ matrix.musllinux_img || 'musllinux_1_1' }}
+        CIBW_MUSLLINUX_X86_64_IMAGE: ${{ matrix.musllinux_img || 'quay.io/pypa/musllinux_1_1_x86_64' }}
+        CIBW_MUSLLINUX_I686_IMAGE: ${{ matrix.musllinux_img || 'quay.io/pypa/musllinux_1_1_x86_64' }}
+        CIBW_MUSLLINUX_AARCH64_IMAGE: ${{ matrix.musllinux_img || 'quay.io/pypa/musllinux_1_1_x86_64' }}
         CIBW_TEST_COMMAND: pytest {package} && pytest --parallel-threads=auto --iterations=20 {package}/tests/free_threading
         CIBW_TEST_REQUIRES: pytest pytest-run-parallel
       run: |
