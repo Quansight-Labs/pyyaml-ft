@@ -12,6 +12,9 @@ if ! command -v prove; then
     exit 1
   fi
 fi
+if ! command -v libtool --version; then
+    apk add libtool
+fi
 echo "::endgroup::"
 
 # build the requested version of libyaml locally
