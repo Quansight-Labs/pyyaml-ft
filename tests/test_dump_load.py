@@ -1,15 +1,15 @@
 import pytest
-import yaml_ft
+import yaml_ft as yaml
 
 
 def test_dump():
-    assert yaml_ft.dump(['foo'])
+    assert yaml.dump(['foo'])
 
 
 def test_load_no_loader():
     with pytest.raises(TypeError):
-        yaml_ft.load("- foo\n")
+        yaml.load("- foo\n")
 
 
 def test_load_safeloader():
-    assert yaml_ft.load("- foo\n", Loader=yaml_ft.SafeLoader)
+    assert yaml.load("- foo\n", Loader=yaml.SafeLoader)

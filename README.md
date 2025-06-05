@@ -30,7 +30,7 @@ the port is merged upstream.
   ```python3
   import io
   import threading
-  import yaml_ft
+  import yaml_ft as yaml
 
 
   class Dice:
@@ -57,12 +57,12 @@ the port is merged upstream.
   """)
       print(f"Thread {threading.current_thread().name}")
       try:
-          objs = yaml_ft.load(yamlcode, Loader=yaml_ft.CLoader)
+          objs = yaml.load(yamlcode, Loader=yaml.CLoader)
           print(f"\t{objs=}")
       except Exception as e:
           print(f"\tException occurred: {e!s}")
 
-  yaml_ft.add_constructor("!dice", construct_dice, Loader=yaml_ft.CLoader)
+  yaml.add_constructor("!dice", construct_dice, Loader=yaml.CLoader)
   load_dice()
 
   t = threading.Thread(target=load_dice)
@@ -120,12 +120,12 @@ To install, type `pip install PyYAML-ft`.
 When LibYAML bindings are installed (enabled by default), you may use the fast
 LibYAML-based parser and emitter as follows:
 
-    >>> yaml_ft.load(stream, Loader=yaml_ft.CLoader)
-    >>> yaml_ft.dump(data, Dumper=yaml_ft.CDumper)
+    >>> yaml.load(stream, Loader=yaml.CLoader)
+    >>> yaml.dump(data, Dumper=yaml.CDumper)
 
 If you don't trust the input YAML stream, you should use:
 
-    >>> yaml_ft.safe_load(stream)
+    >>> yaml.safe_load(stream)
 
 ## Building from source and testing
 
