@@ -1,5 +1,5 @@
 import re
-import yaml
+import yaml_ft as yaml
 
 from .utils import Dice, dice_representer
 

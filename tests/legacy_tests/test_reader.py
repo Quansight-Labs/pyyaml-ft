@@ -1,12 +1,12 @@
 
-import yaml.reader
+import yaml_ft.reader
 
 def _run_reader(data, verbose):
     try:
-        stream = yaml.reader.Reader(data)
+        stream = yaml_ft.reader.Reader(data)
         while stream.peek() != '\0':
             stream.forward()
-    except yaml.reader.ReaderError as exc:
+    except yaml_ft.reader.ReaderError as exc:
         if verbose:
             print(exc)
     else:

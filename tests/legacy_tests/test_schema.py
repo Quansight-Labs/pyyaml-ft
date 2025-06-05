@@ -1,4 +1,4 @@
-import yaml
+import yaml_ft as yaml
 import sys
 import pprint
 import math

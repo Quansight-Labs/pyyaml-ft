@@ -1,5 +1,5 @@
 
-import yaml, yaml.composer, yaml.constructor, yaml.resolver
+import yaml_ft as yaml, yaml_ft.composer, yaml_ft.constructor, yaml_ft.resolver
 
 class CanonicalError(yaml.YAMLError):
     pass
@@ -316,16 +316,16 @@ class CanonicalParser:
         return self.events[0]
 
 class CanonicalLoader(CanonicalScanner, CanonicalParser,
-        yaml.composer.Composer, yaml.constructor.Constructor, yaml.resolver.Resolver):
+        yaml_ft.composer.Composer, yaml_ft.constructor.Constructor, yaml_ft.resolver.Resolver):
 
     def __init__(self, stream):
         if hasattr(stream, 'read'):
             stream = stream.read()
         CanonicalScanner.__init__(self, stream)
         CanonicalParser.__init__(self)
-        yaml.composer.Composer.__init__(self)
-        yaml.constructor.Constructor.__init__(self)
-        yaml.resolver.Resolver.__init__(self)
+        yaml_ft.composer.Composer.__init__(self)
+        yaml_ft.constructor.Constructor.__init__(self)
+        yaml_ft.resolver.Resolver.__init__(self)
 
 yaml.CanonicalLoader = CanonicalLoader
 

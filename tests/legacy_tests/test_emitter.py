@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 
 def _compare_events(events1, events2):
     assert len(events1) == len(events2), (events1, events2)

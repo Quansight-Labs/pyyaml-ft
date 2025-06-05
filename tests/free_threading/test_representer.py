@@ -1,11 +1,11 @@
-import yaml
+import yaml_ft as yaml
 
 from .utils import MyTestClass1, represent1
 
 try:
-    from yaml import CDumper as Dumper
+    from yaml_ft import CDumper as Dumper
 except ImportError:
-    from yaml import Dumper
+    from yaml_ft import Dumper
 
 
 class MyDumper(Dumper):

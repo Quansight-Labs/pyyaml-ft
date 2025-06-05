@@ -1,5 +1,5 @@
 
-import yaml, test_emitter
+import yaml_ft as yaml, test_emitter
 
 def test_loader_error(error_filename, verbose=False):
     try:
@@ -54,7 +54,7 @@ def test_dumper_error(error_filename, verbose=False):
     with open(error_filename, 'rb') as file:
         code = file.read()
     try:
-        import yaml
+        import yaml_ft as yaml
         from io import StringIO
         exec(code)
     except yaml.YAMLError as exc:

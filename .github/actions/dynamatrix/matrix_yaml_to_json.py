@@ -6,7 +6,7 @@ import os
 import pathlib
 import sys
 import typing as t
-import yaml
+import yaml_ft as yaml
 
 from collections.abc import MutableMapping, Sequence
 

@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 
 class AnInstance:
 

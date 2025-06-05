@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 import pprint
 
 def test_implicit_resolver(data_filename, detect_filename, verbose=False):

@@ -42,7 +42,7 @@ clean:
 	rm -fr \
 	    dist/ \
 	    lib/PyYAML_ft.egg-info/ \
-	    lib/yaml/__pycache__/ \
+	    lib/yaml_ft/__pycache__/ \
 	    tests/__pycache__/ \
 	    tests/legacy_tests/__pycache__/ \
-	    yaml/_yaml.c
+	    yaml_ft/_yaml.c

@@ -1,13 +1,13 @@
 import io
 
-import yaml
+import yaml_ft as yaml
 
 from .utils import MyTestClass1, construct1
 
 try:
-    from yaml import CLoader as Loader
+    from yaml_ft import CLoader as Loader
 except ImportError:
-    from yaml import Loader
+    from yaml_ft import Loader
 
 
 class MyLoader(Loader):

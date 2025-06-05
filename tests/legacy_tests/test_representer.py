@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 import test_constructor
 import pprint
 

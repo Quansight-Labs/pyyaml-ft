@@ -2,7 +2,7 @@ import random
 import re
 import threading
 
-import yaml
+import yaml_ft as yaml
 
 from .utils import Dice, dice_constructor
 

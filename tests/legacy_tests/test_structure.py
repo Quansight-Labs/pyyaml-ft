@@ -1,5 +1,5 @@
 
-import yaml, canonical
+import yaml_ft as yaml, canonical
 import pprint
 
 def _convert_structure(loader):
