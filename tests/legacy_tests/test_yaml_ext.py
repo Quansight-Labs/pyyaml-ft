@@ -1,4 +1,4 @@
-import yaml._yaml, yaml
+import yaml_ft._yaml, yaml_ft as yaml
 import types, pprint, tempfile, sys, os
 
 yaml.PyBaseLoader = yaml.BaseLoader
@@ -118,8 +118,8 @@ def test_c_version(verbose=False):
     if verbose:
         print(_yaml.get_version())
         print(_yaml.get_version_string())
-    assert ("%s.%s.%s" % yaml._yaml.get_version()) == yaml._yaml.get_version_string(),    \
-            (_yaml.get_version(), yaml._yaml.get_version_string())
+    assert ("%s.%s.%s" % yaml_ft._yaml.get_version()) == yaml_ft._yaml.get_version_string(),    \
+            (_yaml.get_version(), yaml_ft._yaml.get_version_string())
 
 def test_deprecate_yaml_module():
     import _yaml

@@ -1,5 +1,5 @@
 import pytest
-import yaml
+import yaml_ft as yaml
 
 
 def test_dump():

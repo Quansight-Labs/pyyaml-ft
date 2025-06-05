@@ -30,7 +30,7 @@ the port is merged upstream.
   ```python3
   import io
   import threading
-  import yaml
+  import yaml_ft as yaml
 
 
   class Dice:
@@ -82,8 +82,8 @@ the port is merged upstream.
   ```
 
   If you see new errors in multithreaded programs using `PyYAML-ft` that work with
-  `PyYAML`, you may need to add calls to `yaml.add_constructor`, `yaml.add_representer`
-  `yaml.add_implicit_resolver` or `yaml.add_path_resolver` in your thread worker
+  `PyYAML`, you may need to add calls to `yaml_ft.add_constructor`, `yaml_ft.add_representer`
+  `yaml_ft.add_implicit_resolver` or `yaml_ft.add_path_resolver` in your thread worker
   function or worker initialization function.
 
 ### Python versions support
@@ -111,6 +111,21 @@ dependencies = [
   "PyYAML; python_version<'3.13'",
   "PyYAML-ft; python_version>='3.13'",
 ]
+```
+
+### Different module name
+
+PyYAML-ft uses a different module name (namely `yaml_ft`) than upstream PyYAML
+on purpose, so that both can be installed in an environment at the same time.
+
+If your library depends on both for different Python versions, you can do
+the following for ease of use:
+
+```python
+try:
+    import yaml_ft as yaml
+except ModuleNotFoundError:
+    import yaml
 ```
 
 ## Installation

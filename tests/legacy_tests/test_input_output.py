@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 import codecs, io, tempfile, os, os.path
 
 def test_unicode_input(unicode_filename, verbose=False):

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import yaml, codecs, sys, os.path, optparse
+import yaml_ft as yaml, codecs, sys, os.path, optparse
 
 class Style:
 

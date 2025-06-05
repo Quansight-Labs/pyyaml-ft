@@ -3,7 +3,7 @@
 /build/*
 /lib/PyYAML.egg-info/*
 /wheelhouse/*
-/yaml/_yaml.c
+/yaml_ft/_yaml.c
 MANIFEST
 **/*.so
 **/*.dylib

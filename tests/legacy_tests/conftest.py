@@ -9,7 +9,7 @@ import warnings
 from test_appliance import find_test_filenames, DATA
 
 try:
-    from yaml import _yaml
+    from yaml_ft import _yaml
     HAS_LIBYAML_EXT = True
     del _yaml
 except ImportError:

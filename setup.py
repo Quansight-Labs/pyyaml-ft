@@ -331,9 +331,9 @@ if __name__ == '__main__':
         project_urls=PROJECT_URLS,
 
         package_dir={'': 'lib'},
-        packages=['yaml', '_yaml'],
+        packages=['yaml_ft', '_yaml_ft'],
         ext_modules=[
-            Extension('yaml._yaml', ['yaml/_yaml.pyx'],
+            Extension('yaml_ft._yaml', ['yaml_ft/_yaml.pyx'],
                 'libyaml', "LibYAML bindings", LIBYAML_CHECK,
                 libraries=['yaml']),
         ],

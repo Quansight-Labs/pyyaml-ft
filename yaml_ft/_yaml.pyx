@@ -1,6 +1,6 @@
 # cython: freethreading_compatible=True
 
-import yaml
+import yaml_ft as yaml
 
 def get_version_string():
     cdef const char *value

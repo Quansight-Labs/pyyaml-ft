@@ -3,7 +3,7 @@
 # and has been moved into the `yaml` package namespace.
 # It does not perfectly mimic its old counterpart, but should get
 # close enough for anyone who's relying on it even when they shouldn't.
-import yaml
+import yaml_ft as yaml
 
 # in some circumstances, the yaml module we imoprted may be from a different version, so we need
 # to tread carefully when poking at it here (it may not have the attributes we expect)
@@ -13,13 +13,13 @@ if not getattr(yaml, '__with_libyaml__', False):
     exc = ModuleNotFoundError if version_info >= (3, 6) else ImportError
     raise exc("No module named '_yaml'")
 else:
-    from yaml._yaml import *
+    from yaml_ft._yaml import *
     import warnings
     warnings.warn(
-        'The _yaml extension module is now located at yaml._yaml'
+        'The _yaml extension module is now located at yaml_ft._yaml'
         ' and its location is subject to change.  To use the'
-        ' LibYAML-based parser and emitter, import from `yaml`:'
-        ' `from yaml import CLoader as Loader, CDumper as Dumper`.',
+        ' LibYAML-based parser and emitter, import from `yaml_ft`:'
+        ' `from yaml_ft import CLoader as Loader, CDumper as Dumper`.',
         DeprecationWarning
     )
     del warnings

@@ -4,17 +4,17 @@ import threading
 
 import pytest
 
-import yaml
+import yaml_ft as yaml
 
 try:
-    from yaml import CDumper as Dumper
+    from yaml_ft import CDumper as Dumper
 except ImportError:
-    from yaml import Dumper
+    from yaml_ft import Dumper
 
 try:
-    from yaml import CLoader as Loader
+    from yaml_ft import CLoader as Loader
 except ImportError:
-    from yaml import Loader
+    from yaml_ft import Loader
 
 
 

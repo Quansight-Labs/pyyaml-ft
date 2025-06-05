@@ -1,5 +1,5 @@
 
-import yaml
+import yaml_ft as yaml
 
 def test_marks(marks_filename, verbose=False):
     with open(marks_filename, 'r') as file:

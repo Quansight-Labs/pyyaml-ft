@@ -1,5 +1,5 @@
 import sys
-import yaml
+import yaml_ft as yaml
 
 
 def main():

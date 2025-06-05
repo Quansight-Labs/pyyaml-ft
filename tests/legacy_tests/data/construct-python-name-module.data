@@ -1,6 +1,6 @@
 - !!python/name:str
-- !!python/name:yaml.Loader
-- !!python/name:yaml.dump
+- !!python/name:yaml_ft.Loader
+- !!python/name:yaml_ft.dump
 - !!python/name:abs
-- !!python/module:yaml.tokens
+- !!python/module:yaml_ft.tokens
 - !!python/name:signal.Handlers
