@@ -21,8 +21,8 @@ the port is merged upstream.
 
 ### Differences compared with upstream
 
-- This fork uses Cython 3.1.0rc1 which supports the free-threaded build, but is still in
-  beta. Its support for the free-threaded build is also still experimental.
+- This fork uses Cython 3.1 which supports the free-threaded build, but whose support
+  is still experimental.
 - `add_constructor`, `add_representer` and `add_*resolver` now all use thread-local
   registries, so you will have to explicitly register your custom constrcutors,
   representers and resolvers in each thread. Here's a small test showcasing that:
@@ -150,13 +150,7 @@ To build PyYAML-ft from source:
    `git clone https://github.com/Quansight-Labs/pyyaml-ft`.
 1. Create a new virtual environment with `python3.13 -m venv .venv`.
 1. Run `source .venv/bin/activate` to activate your new virtual environment.
-1. Install the build dependencies with:
-
-   ```bash
-   python3.13 -m pip install Cython==3.1.0rc1 setuptools wheel
-   ```
-
-1. Run `python3.13 -m pip install --no-build-isolation .`. This will build PyYAML-ft
+1. Run `python3.13 -m pip install .`. This will build PyYAML-ft
    from source and install it in the newly created virtual environment. By default, the
    installation process will try to install the LibYAML bindings as well, but will
    fail silently if it cannot and instead use the pure-Python version.
@@ -176,7 +170,7 @@ To build PyYAML-ft from source:
    PYYAML_FORCE_LIBYAML=1 \
    CFLAGS="-Ilibyaml/include" \
    LDFLAGS="-Llibyaml/src/.libs" \
-   python -m pip install -v --no-build-isolation .
+   python -m pip install -v .
    ```
 
 To test PyYAML-ft:
