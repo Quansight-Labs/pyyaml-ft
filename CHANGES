@@ -3,6 +3,10 @@ For a complete changelog, see:
 
 * https://github.com/Quansight-Labs/pyyaml/commits/
 
+8.0.1.dev0 (TBD)
+
+* TBD
+
 8.0.0 (2025-06-09)
 
 * https://github.com/Quansight-Labs/pyyaml-ft/pull/20 -- Rename yaml module to yaml_ft - more information
