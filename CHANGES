@@ -5,10 +5,11 @@ For a complete changelog, see:
 
 8.0.0 (2025-06-09)
 
+* https://github.com/Quansight-Labs/pyyaml-ft/pull/20 -- Rename yaml module to yaml_ft - more information
+  on the [README](https://github.com/Quansight-Labs/pyyaml-ft#different-module-name).
 * https://github.com/Quansight-Labs/pyyaml-ft/pull/17 -- Fix tests when the C extension isn't built
 * https://github.com/Quansight-Labs/pyyaml-ft/pull/18 -- Upgrade to Cython 3.1 final
 * https://github.com/Quansight-Labs/pyyaml-ft/pull/19 -- Upgrade to musllinux_1_2 for musl wheels
-* https://github.com/Quansight-Labs/pyyaml-ft/pull/20 -- Rename yaml module to yaml_ft
 
 7.0.1 (2025-04-28)
 
