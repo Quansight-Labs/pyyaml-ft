@@ -195,6 +195,11 @@ jobs:
       uses: docker/setup-qemu-action@v3
       if: matrix.arch != 'x86_64'
 
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+
     - name: Build/Test/Package
       id: build
       env:
