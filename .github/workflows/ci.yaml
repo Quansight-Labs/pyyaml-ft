@@ -156,6 +156,16 @@ jobs:
           - { platform: manylinux2014, arch: s390x, spec: cp313t, omit: ${{ env.skip_slow_jobs }} }
           - { platform: musllinux_1_2, arch: x86_64, spec: cp313t }
           - { platform: musllinux_1_2, arch: aarch64, spec: cp313t, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: manylinux2014, arch: x86_64, spec: cp314 }
+          - { platform: manylinux2014, arch: aarch64, spec: cp314, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: manylinux2014, arch: s390x, spec: cp314, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: musllinux_1_2, arch: x86_64, spec: cp314 }
+          - { platform: musllinux_1_2, arch: aarch64, spec: cp314, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: manylinux2014, arch: x86_64, spec: cp314t }
+          - { platform: manylinux2014, arch: aarch64, spec: cp314t, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: manylinux2014, arch: s390x, spec: cp314t, omit: ${{ env.skip_slow_jobs }} }
+          - { platform: musllinux_1_2, arch: x86_64, spec: cp314t }
+          - { platform: musllinux_1_2, arch: aarch64, spec: cp314t, omit: ${{ env.skip_slow_jobs }} }
 
 
   linux_pyyaml:
@@ -184,6 +194,11 @@ jobs:
     - name: configure docker foreign arch support
       uses: docker/setup-qemu-action@v3
       if: matrix.arch != 'x86_64'
+
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
 
     - name: Build/Test/Package
       id: build
@@ -294,6 +309,16 @@ jobs:
           - spec: cp313t-macosx_x86_64
             runs_on: [macos-13]
           - spec: cp313t-macosx_arm64
+            deployment_target: '11.0'
+            arch: arm64
+          - spec: cp314-macosx_x86_64
+            runs_on: [macos-13]
+          - spec: cp314-macosx_arm64
+            deployment_target: '11.0'
+            arch: arm64
+          - spec: cp314t-macosx_x86_64
+            runs_on: [macos-13]
+          - spec: cp314t-macosx_arm64
             deployment_target: '11.0'
             arch: arm64
   
@@ -422,6 +447,8 @@ jobs:
           include:
           - spec: cp313-win_amd64
           - spec: cp313t-win_amd64
+          - spec: cp314-win_amd64
+          - spec: cp314t-win_amd64
 
   windows_pyyaml:
     needs: [python_sdist, windows_libyaml, make_windows_pyyaml_matrix]
